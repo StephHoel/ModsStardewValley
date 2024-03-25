@@ -1,3 +1,36 @@
 {
-  "message": "Configuração da Velocidade das Máquinas Recarregada"
+  "message": "Configuração da Velocidade das Máquinas Recarregada",
+
+  "ConfigTitleGeneralOptions": "Config da Velocidade das Máquinas",
+  "ConfigUpdateIntervalName": "Intervalo de Atualização (em seg)",
+  "ConfigReloadConfigKeyName": "Recarregar Config (Tecla)",
+  "ConfigTimeName": "Tempo (seg/%)",
+  "ConfigPercentName": "Usar Percentagem?",
+
+  "BeeHouse": "Apiário",
+  "Cask": "Barril de Madeira",
+  "CharcoalKiln": "Carvoaria",
+  "CheesePress": "Prensa de Queijo",
+  "Crystalarium": "Cristalário",
+  "Furnace": "Fornalha",
+  "Incubator": "Incubadora",
+  "Keg": "Barril",
+  "LightningRod": "Para-raios",
+  "Loom": "Tear",
+  "MayonnaiseMachine": "Máquina de Maionese",
+  "OilMaker": "Gerador de Óleo",
+  "PreservesJar": "Jarra de conserva",
+  "RecyclingMachine": "Máquina de Reciclagem",
+  "SeedMaker": "Gerador de Sementes",
+  "SlimeEggPress": "Pensa de Gostas",
+  "SlimeIncubator": "Incubadora de Gosmas",
+  "Tapper": "Torneirinha",
+  "WormBin": "Cesto de Minhocas",
+  "FishSmoker": "Defumador de Peixe",
+  "Dehydrator": "Desidratador",
+  "SolarPanel": "Painel Solar",
+  "OstrichIncubator": "Incubadora de Avestruzes",
+  "HeavyTapper": "Toneirinha Pesada",
+  "BoneMill": "Triturador de Ossos",
+  "GeodeCrusher": "Rachador de Geodos"
 }

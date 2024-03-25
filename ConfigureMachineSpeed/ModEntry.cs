@@ -19,7 +19,10 @@ public class ModEntry : Mod
     {
         I18n.Init(helper.Translation);
         _config = helper.ReadConfig<ModConfig>();
+
+        helper.Events.GameLoop.GameLaunched += OnGameLaunched;
         helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+        //helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
         helper.Events.GameLoop.UpdateTicking += OnUpdateTicking;
         helper.Events.Input.ButtonPressed += OnButtonPressed;
     }
@@ -158,5 +161,104 @@ public class ModEntry : Mod
                                       from building in (IEnumerable<Building>)location.buildings
                                       where building.indoors.Value != null
                                       select building.indoors.Value);
+    }
+
+    private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
+    {
+        // get Generic Mod Config Menu's API (if it's installed)
+        var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+        if (configMenu is null)
+            return;
+
+        // register mod
+        configMenu.Register(
+            mod: this.ModManifest,
+            reset: () => _config = new ModConfig(),
+            save: () => this.Helper.WriteConfig(_config)
+        );
+
+        configMenu.AddSectionTitle(
+            mod: ModManifest,
+            text: I18n.ConfigTitleGeneralOptions
+        );
+
+        // UpdateInterval
+        configMenu.AddNumberOption(
+            mod: ModManifest,
+            name: I18n.ConfigUpdateIntervalName,
+            getValue: () => _config.UpdateInterval,
+            setValue: val => _config.UpdateInterval = (uint)val,
+            min: 1,
+            max: 10
+        );
+
+        // ReloadConfigKey
+        configMenu.AddKeybind(
+            mod: ModManifest,
+            name: I18n.ConfigReloadConfigKeyName,
+            getValue: () => (SButton)_config.ReloadConfigKey,
+            setValue: value => _config.ReloadConfigKey = value
+        );
+
+        // Machines
+        foreach (var machine in _config.Machines)
+        {
+            // Name
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () =>
+                {
+                    return machine.Name switch
+                    {
+                        "Bee House" => I18n.BeeHouse(),
+                        "Cask" => I18n.Cask(),
+                        "Charcoal Kiln" => I18n.CharcoalKiln(),
+                        "Cheese Press" => I18n.CheesePress(),
+                        "Crystalarium" => I18n.Crystalarium(),
+                        "Furnace" => I18n.Furnace(),
+                        "Incubator" => I18n.Incubator(),
+                        "Keg" => I18n.Keg(),
+                        "Lightning Rod" => I18n.LightningRod(),
+                        "Loom" => I18n.Loom(),
+                        "Mayonnaise Machine" => I18n.MayonnaiseMachine(),
+                        "Oil Maker" => I18n.OilMaker(),
+                        "Preserves Jar" => I18n.PreservesJar(),
+                        "Recycling Machine" => I18n.RecyclingMachine(),
+                        "Seed Maker" => I18n.SeedMaker(),
+                        "Slime Egg-Press" => I18n.SlimeEggPress(),
+                        "Slime Incubator" => I18n.SlimeIncubator(),
+                        "Tapper" => I18n.Tapper(),
+                        "Worm Bin" => I18n.WormBin(),
+                        "Fish Smoker" => I18n.FishSmoker(),
+                        "Dehydrator" => I18n.Dehydrator(),
+                        "Solar Panel" => I18n.SolarPanel(),
+                        "Ostrich Incubator" => I18n.OstrichIncubator(),
+                        "Heavy Tapper" => I18n.HeavyTapper(),
+                        "Bone Mill" => I18n.BoneMill(),
+                        "Geode Crusher" => I18n.GeodeCrusher(),
+                        _ => string.Empty,
+                    };
+                }
+            );
+
+            // Time  - "Time": 1.0,
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: I18n.ConfigTimeName,
+                getValue: () => machine.Time,
+                setValue: val => machine.Time = (int)val,
+                min: 1,
+                max: 100
+            );
+
+            // UsePercent - "UsePercent": true
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: I18n.ConfigPercentName,
+                getValue: () => machine.UsePercent,
+                setValue: val => machine.UsePercent = val
+
+            );
+        }
     }
 }
