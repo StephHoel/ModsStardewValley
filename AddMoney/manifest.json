@@ -1,7 +1,7 @@
 {
-  "Name": "AddMoney",
+  "Name": "Add Money",
   "Author": "Steph Hoel",
-  "Version": "1.0.2",
+  "Version": "1.1.0",
   "Description": "A mod for add money",
   "UniqueID": "StephHoel.AddMoney",
   "EntryDll": "AddMoney.dll",

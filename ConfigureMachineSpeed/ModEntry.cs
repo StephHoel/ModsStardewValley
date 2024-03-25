@@ -22,7 +22,6 @@ public class ModEntry : Mod
 
         helper.Events.GameLoop.GameLaunched += OnGameLaunched;
         helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
-        //helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
         helper.Events.GameLoop.UpdateTicking += OnUpdateTicking;
         helper.Events.Input.ButtonPressed += OnButtonPressed;
     }

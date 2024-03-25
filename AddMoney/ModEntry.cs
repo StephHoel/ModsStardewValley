@@ -16,6 +16,7 @@ public class ModEntry : Mod
         I18n.Init(helper.Translation);
         _config = helper.ReadConfig<ModConfig>();
 
+        helper.Events.GameLoop.GameLaunched += OnGameLaunched;
         helper.Events.Input.ButtonPressed += OnButtonPressed;
     }
 
@@ -41,5 +42,43 @@ public class ModEntry : Mod
         }
         //else
         //    Monitor.Log($"{Game1.player.Name} pressed {e.Button}.", LogLevel.Debug);
+    }
+
+    private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
+    {
+        // get Generic Mod Config Menu's API (if it's installed)
+        var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+        if (configMenu is null)
+            return;
+
+        // register mod
+        configMenu.Register(
+            mod: this.ModManifest,
+            reset: () => _config = new ModConfig(),
+            save: () => this.Helper.WriteConfig(_config)
+        );
+
+        configMenu.AddSectionTitle(
+            mod: ModManifest,
+            text: I18n.ConfigTitleGeneralOptions
+        );
+
+        // ButtonToAddMoney
+        configMenu.AddKeybind(
+            mod: ModManifest,
+            name: I18n.ConfigButtonAddToMoneyKeyName,
+            getValue: () => _config.ButtonToAddMoney,
+            setValue: value => _config.ButtonToAddMoney = value
+        );
+
+        // GoldToAdd
+        configMenu.AddNumberOption(
+            mod: ModManifest,
+            name: I18n.ConfigGoldAddName,
+            getValue: () => _config.GoldToAdd,
+            setValue: val => _config.GoldToAdd = val
+        );
+
+        
     }
 }
