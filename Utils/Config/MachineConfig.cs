@@ -1,6 +1,6 @@
-﻿namespace ConfigureMachineSpeed;
+﻿namespace Utils.Config;
 
-internal class MachineConfig
+public class MachineConfig
 {
     public string Name { get; set; }
 

@@ -2,10 +2,10 @@
 using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewModdingAPI.Framework.ModLoading.Rewriters.StardewValley_1_6;
 using StardewValley;
-using StardewValley.Buildings;
 using StardewValley.Objects;
+using Utils;
+using Utils.Config;
 
 namespace ConfigureMachineSpeed;
 
@@ -29,34 +29,29 @@ public class ModEntry : Mod
     private ModConfig processConfig(ModConfig cfg)
     {
         if (cfg.UpdateInterval == 0)
-        {
             cfg.UpdateInterval = 1u;
-        }
-        MachineConfig[] machines = cfg.Machines;
+
+        MachineConfig[] machines = Machines.GetMachines();
+
         foreach (MachineConfig machineConfig in machines)
         {
             if (!machineConfig.UsePercent && machineConfig.Time <= 0f)
-            {
                 machineConfig.Time = 10f;
-            }
         }
+
         return cfg;
     }
 
     private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
     {
         if (Context.IsMainPlayer)
-        {
             this.configureAllMachines();
-        }
     }
 
     private void OnUpdateTicking(object sender, UpdateTickingEventArgs e)
     {
         if (Context.IsMainPlayer && e.IsMultipleOf(this._config.UpdateInterval))
-        {
             this.configureAllMachines();
-        }
     }
 
     private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -70,8 +65,10 @@ public class ModEntry : Mod
 
     private void configureAllMachines()
     {
-        IEnumerable<GameLocation> locations = ModEntry.GetLocations();
-        MachineConfig[] machines = this._config.Machines;
+        var locations = Locations.GetLocations();
+
+        var machines = Machines.GetMachines();
+
         foreach (MachineConfig cfg in machines)
         {
             foreach (GameLocation item in locations)
@@ -84,10 +81,9 @@ public class ModEntry : Mod
                     while (enumerator2.MoveNext())
                     {
                         var current2 = enumerator2.Current;
+
                         if (func(current2))
-                        {
                             this.configureMachine(cfg, current2.Value);
-                        }
                     }
                 }
                 finally
@@ -101,31 +97,19 @@ public class ModEntry : Mod
     private void configureMachine(MachineConfig cfg, StardewValley.Object obj)
     {
         Cask val = (Cask)(object)((obj is Cask) ? obj : null);
+
         if (val != null && obj.heldObject.Value != null)
         {
-            float num = 1f;
-            switch (val.heldObject.Value.ParentSheetIndex)
+            float num = val.heldObject.Value.ParentSheetIndex switch
             {
-                case 426:
-                    num = 4f;
-                    break;
+                426 => 4f,
+                424 => 4f,
+                459 => 2f,
+                303 => 1.66f,
+                346 => 2f,
+                _ => 1f
+            };
 
-                case 424:
-                    num = 4f;
-                    break;
-
-                case 459:
-                    num = 2f;
-                    break;
-
-                case 303:
-                    num = 1.66f;
-                    break;
-
-                case 346:
-                    num = 2f;
-                    break;
-            }
             if (cfg.UsePercent && Math.Abs(cfg.Time - 100f) > this.EPSILON && (int)Math.Round(val.agingRate.Value * 1000f) % 10 != 1)
             {
                 val.agingRate.Value = num * 100f / cfg.Time;
@@ -145,7 +129,7 @@ public class ModEntry : Mod
         {
             if (cfg.UsePercent && Math.Abs(cfg.Time - 100f) > this.EPSILON)
             {
-                obj.MinutesUntilReady = Math.Max((int)((float)obj.MinutesUntilReady * cfg.Time / 100f / 10f) * 10 - 2, 8);
+                obj.MinutesUntilReady = Math.Max((int)(obj.MinutesUntilReady * cfg.Time / 100f / 10f) * 10 - 2, 8);
             }
             else if (!cfg.UsePercent)
             {
@@ -154,20 +138,12 @@ public class ModEntry : Mod
         }
     }
 
-    public static IEnumerable<GameLocation> GetLocations()
-    {
-        return Game1.locations.Concat(from location in Game1.locations.OfType<BuildableGameLocationFacade>()
-                                      from building in (IEnumerable<Building>)location.buildings
-                                      where building.indoors.Value != null
-                                      select building.indoors.Value);
-    }
-
     private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
     {
         // get Generic Mod Config Menu's API (if it's installed)
         var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-        if (configMenu is null)
-            return;
+
+        if (configMenu is null) return;
 
         // register mod
         configMenu.Register(
@@ -200,7 +176,7 @@ public class ModEntry : Mod
         );
 
         // Machines
-        foreach (var machine in _config.Machines)
+        foreach (var machine in Machines.GetMachines())
         {
             // Name
             configMenu.AddSectionTitle(
@@ -215,6 +191,7 @@ public class ModEntry : Mod
                         "Cheese Press" => I18n.CheesePress(),
                         "Crystalarium" => I18n.Crystalarium(),
                         "Furnace" => I18n.Furnace(),
+                        "Heavy Furnace" => I18n.HeavyFurnace(),
                         "Incubator" => I18n.Incubator(),
                         "Keg" => I18n.Keg(),
                         "Lightning Rod" => I18n.LightningRod(),

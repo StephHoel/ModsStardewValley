@@ -1,9 +1,10 @@
-﻿namespace AutoWater;
+﻿namespace Utils.Lists;
 
-public static class Locations
+public static class ListLocations
 {
-    public readonly static List<string> List = [
-            "AbandonedJojaMart",
+    public static readonly List<string> List = new()
+    {
+        "AbandonedJojaMart",
         "AdventureGuild",
         "AnimalHouse",
         "BathHousePool",
@@ -61,5 +62,5 @@ public static class Locations
         "Woods",
         "Custom_GrandpasShedGreenhouse",
         "Custom_Garden"
-        ];
+    };
 }

@@ -14,14 +14,14 @@ public class ModEntry : Mod
 
     private async void WaterEverything(object sender, EventArgs e)
     {
-        foreach (var location in Locations.List)
+        foreach (var location in Utils.Locations.GetLocations())
         {
-            var locationGame = Game1.getLocationFromName(location);
-            // Garden Pots
-            if (locationGame is not null)
+            //Monitor.Log($"{location} is {(locationGame is null ? "null" : "not null")}", LogLevel.Debug);
+
+            if (location is not null)
             {
-                //Monitor.Log($"{location} is not nul", LogLevel.Debug);
-                var objects = locationGame.objects.Values.OfType<IndoorPot>();
+                // Garden Pots
+                var objects = location.objects.Values.OfType<IndoorPot>();
                 foreach (var pot in objects)
                 {
                     //Monitor.Log($"{location} with Garden Pot to add water", LogLevel.Debug);
@@ -29,16 +29,12 @@ public class ModEntry : Mod
                 }
 
                 // Hoe Dirts
-                var terrains = locationGame.terrainFeatures.Values.OfType<HoeDirt>();
+                var terrains = location.terrainFeatures.Values.OfType<HoeDirt>();
                 foreach (var terrain in terrains)
                 {
                     //Monitor.Log($"{location} with HoeDirt to add water", LogLevel.Debug);
                     terrain.state.Value = 1;
                 }
-            }
-            else
-            {
-                //Monitor.Log($"{location} is null", LogLevel.Debug);
             }
         }
     }

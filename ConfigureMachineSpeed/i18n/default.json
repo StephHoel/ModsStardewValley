@@ -2,9 +2,9 @@
   "message": "Machine Speed Configuration Reloaded",
 
   "ConfigTitleGeneralOptions": "Config Machine Speed",
-  "ConfigUpdateIntervalName": "Update Interval (in sec)",
+  "ConfigUpdateIntervalName": "Update Interval (in min)",
   "ConfigReloadConfigKeyName": "Reload Config (Key)",
-  "ConfigTimeName": "Time (sec/%)",
+  "ConfigTimeName": "Time (min/%)",
   "ConfigPercentName": "Use Percent?",
 
   "BeeHouse": "Bee House",
@@ -13,6 +13,7 @@
   "CheesePress": "Cheese Press",
   "Crystalarium": "Crystalarium",
   "Furnace": "Furnace",
+  "HeavyFurnace": "Heavy Furnace",
   "Incubator": "Incubator",
   "Keg": "Keg",
   "LightningRod": "Lightning Rod",
