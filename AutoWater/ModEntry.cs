@@ -1,5 +1,6 @@
 ﻿using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 
 namespace AutoWater;
@@ -11,27 +12,34 @@ public class ModEntry : Mod
         helper.Events.GameLoop.DayStarted += WaterEverything;
     }
 
-    private void WaterEverything(object sender, EventArgs e)
+    private async void WaterEverything(object sender, EventArgs e)
     {
-        foreach (HoeDirt farm in Game1.getLocationFromName("Farm").terrainFeatures.Values.OfType<HoeDirt>())
+        foreach (var location in Locations.List)
         {
-            farm.state.Value = 1;
-        }
-        foreach (HoeDirt greenhouse in Game1.getLocationFromName("Greenhouse").terrainFeatures.Values.OfType<HoeDirt>())
-        {
-            greenhouse.state.Value = 1;
-        }
-        foreach (HoeDirt GrandpasShed in Game1.getLocationFromName("Custom_GrandpasShedGreenhouse").terrainFeatures.Values.OfType<HoeDirt>())
-        {
-            GrandpasShed.state.Value = 1;
-        }
-        foreach (HoeDirt IslandWest in Game1.getLocationFromName("IslandWest").terrainFeatures.Values.OfType<HoeDirt>())
-        {
-            IslandWest.state.Value = 1;
-        }
-        foreach (HoeDirt CommGarden in Game1.getLocationFromName("Custom_Garden").terrainFeatures.Values.OfType<HoeDirt>())
-        {
-            CommGarden.state.Value = 1;
+            var locationGame = Game1.getLocationFromName(location);
+            // Garden Pots
+            if (locationGame is not null)
+            {
+                //Monitor.Log($"{location} is not nul", LogLevel.Debug);
+                var objects = locationGame.objects.Values.OfType<IndoorPot>();
+                foreach (var pot in objects)
+                {
+                    //Monitor.Log($"{location} with Garden Pot to add water", LogLevel.Debug);
+                    pot.Water();
+                }
+
+                // Hoe Dirts
+                var terrains = locationGame.terrainFeatures.Values.OfType<HoeDirt>();
+                foreach (var terrain in terrains)
+                {
+                    //Monitor.Log($"{location} with HoeDirt to add water", LogLevel.Debug);
+                    terrain.state.Value = 1;
+                }
+            }
+            else
+            {
+                //Monitor.Log($"{location} is null", LogLevel.Debug);
+            }
         }
     }
 }

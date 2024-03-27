@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddMoney", "AddMoney\AddMon
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigureMachineSpeed", "ConfigureMachineSpeed\ConfigureMachineSpeed.csproj", "{5FE5A55C-1CFE-4B52-9B45-3E087E44C836}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoWater", "AutoWater\AutoWater.csproj", "{2557840E-160C-4CD4-B811-78C9563802A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoWater", "AutoWater\AutoWater.csproj", "{2557840E-160C-4CD4-B811-78C9563802A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
