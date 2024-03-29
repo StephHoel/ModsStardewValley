@@ -2,9 +2,9 @@
   "message": "Machine Speed Configuration Reloaded",
 
   "ConfigTitleGeneralOptions": "Config Machine Speed",
-  "ConfigUpdateIntervalName": "Update Interval (in min)",
+  "ConfigUpdateIntervalName": "Update Interval",
   "ConfigReloadConfigKeyName": "Reload Config (Key)",
-  "ConfigTimeName": "Time (min/%)",
+  "ConfigTimeName": "Time",
   "ConfigPercentName": "Use Percent?",
 
   "BeeHouse": "Bee House",

@@ -4,7 +4,7 @@ public class MachineConfig
 {
     public string Name { get; set; }
 
-    public float Time { get; set; } = 100f;
+    public int Time { get; set; } = 100;
 
     public bool UsePercent { get; set; } = true;
 

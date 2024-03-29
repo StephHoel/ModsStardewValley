@@ -1,7 +1,7 @@
 {
   "Name": "Configure Machine Speed",
   "Author": "Steph Hoel",
-  "Version": "1.1.3",
+  "Version": "1.1.7",
   "Description": "Configure the speed of your machines.",
   "UniqueID": "StephHoel.ConfigureMachineSpeed",
   "EntryDll": "ConfigureMachineSpeed.dll",

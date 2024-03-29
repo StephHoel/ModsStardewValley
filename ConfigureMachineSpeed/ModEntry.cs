@@ -20,6 +20,12 @@ public class ModEntry : Mod
         I18n.Init(helper.Translation);
         _config = helper.ReadConfig<ModConfig>();
 
+        if (_config.Machines is null)
+            _config.Machines = Machines.GetNewMachines();
+        else _config.Machines = Machines.SetMachines(_config.Machines);
+
+        helper.WriteConfig(_config);
+
         helper.Events.GameLoop.GameLaunched += OnGameLaunched;
         helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         helper.Events.GameLoop.UpdateTicking += OnUpdateTicking;
@@ -31,12 +37,12 @@ public class ModEntry : Mod
         if (cfg.UpdateInterval == 0)
             cfg.UpdateInterval = 1u;
 
-        MachineConfig[] machines = Machines.GetMachines();
+        MachineConfig[] machines = _config.Machines;
 
         foreach (MachineConfig machineConfig in machines)
         {
-            if (!machineConfig.UsePercent && machineConfig.Time <= 0f)
-                machineConfig.Time = 10f;
+            if (!machineConfig.UsePercent && machineConfig.Time <= 0)
+                machineConfig.Time = 10;
         }
 
         return cfg;
@@ -67,9 +73,7 @@ public class ModEntry : Mod
     {
         var locations = Locations.GetLocations();
 
-        var machines = Machines.GetMachines();
-
-        foreach (MachineConfig cfg in machines)
+        foreach (MachineConfig cfg in _config.Machines)
         {
             foreach (GameLocation item in locations)
             {
@@ -96,7 +100,7 @@ public class ModEntry : Mod
 
     private void configureMachine(MachineConfig cfg, StardewValley.Object obj)
     {
-        Cask val = (Cask)(object)((obj is Cask) ? obj : null);
+        Cask val = (Cask)(object)(obj is Cask ? obj : null);
 
         if (val != null && obj.heldObject.Value != null)
         {
@@ -176,7 +180,7 @@ public class ModEntry : Mod
         );
 
         // Machines
-        foreach (var machine in Machines.GetMachines())
+        foreach (var machine in _config.Machines)
         {
             // Name
             configMenu.AddSectionTitle(
