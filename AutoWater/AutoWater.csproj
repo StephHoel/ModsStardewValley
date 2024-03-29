@@ -16,4 +16,5 @@
     <ProjectReference Include="..\Utils\Utils.csproj" />
   </ItemGroup>
 
+	<Import Project="..\common.targets" />
 </Project>
