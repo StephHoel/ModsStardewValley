@@ -18,6 +18,9 @@ public class ModEntry : Mod
     public override void Entry(IModHelper helper)
     {
         I18n.Init(helper.Translation);
+
+        RemoveObsoleteFiles(helper, ["Utils.pdb"]);
+
         _config = helper.ReadConfig<ModConfig>();
 
         if (_config.Machines is null)
@@ -66,6 +69,26 @@ public class ModEntry : Mod
         {
             _config = processConfig(Helper.ReadConfig<ModConfig>());
             Game1.addHUDMessage(new(I18n.Message(), 2));
+        }
+    }
+
+    private void RemoveObsoleteFiles(IModHelper helper, string[] files)
+    {
+        foreach (var file in files)
+        {
+            string fullPath = Path.Combine(helper.DirectoryPath, file);
+            if (File.Exists(fullPath))
+            {
+                try
+                {
+                    File.Delete(fullPath);
+                    Monitor.Log($"Removed obsolete file '{file}'.", LogLevel.Debug);
+                }
+                catch (Exception ex)
+                {
+                    Monitor.Log($"Failed deleting obsolete file '{file}':\n{ex}", LogLevel.Debug);
+                }
+            }
         }
     }
 
