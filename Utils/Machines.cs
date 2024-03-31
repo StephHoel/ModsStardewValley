@@ -20,9 +20,7 @@ public class Machines
         foreach (var machine in newMachines)
         {
             if (!machinesList.Contains(machine))
-            {
                 machinesList.Add(machine);
-            }
         }
 
         return machinesList.ToArray()!;
