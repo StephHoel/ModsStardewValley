@@ -54,7 +54,7 @@ public class ModEntry : Mod
                 }
                 catch (Exception ex)
                 {
-                    Monitor.Log($"Failed deleting obsolete file '{file}':\n{ex}", LogLevel.Debug);
+                    Monitor.Log($"Failed deleting obsolete file '{file}':\n{ex}");
                 }
             }
         }
