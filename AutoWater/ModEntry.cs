@@ -1,5 +1,4 @@
 ﻿using StardewModdingAPI;
-using StardewValley;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 
@@ -9,6 +8,8 @@ public class ModEntry : Mod
 {
     public override void Entry(IModHelper helper)
     {
+        RemoveObsoleteFiles(helper, ["Utils.pdb", "AutoWater.pdb"]);
+
         helper.Events.GameLoop.DayStarted += WaterEverything;
     }
 
@@ -34,6 +35,26 @@ public class ModEntry : Mod
                 {
                     //Monitor.Log($"{location} with HoeDirt to add water", LogLevel.Debug);
                     terrain.state.Value = 1;
+                }
+            }
+        }
+    }
+
+    private void RemoveObsoleteFiles(IModHelper helper, string[] files)
+    {
+        foreach (var file in files)
+        {
+            string fullPath = Path.Combine(helper.DirectoryPath, file);
+            if (File.Exists(fullPath))
+            {
+                try
+                {
+                    File.Delete(fullPath);
+                    Monitor.Log($"Removed obsolete file '{file}'.", LogLevel.Debug);
+                }
+                catch (Exception ex)
+                {
+                    Monitor.Log($"Failed deleting obsolete file '{file}':\n{ex}", LogLevel.Debug);
                 }
             }
         }
