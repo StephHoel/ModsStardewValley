@@ -6,6 +6,7 @@ using StardewValley;
 using StardewValley.Objects;
 using Utils;
 using Utils.Config;
+using Object = StardewValley.Object;
 
 namespace ConfigureMachineSpeed;
 
@@ -23,145 +24,39 @@ public class ModEntry : Mod
 
         _config = helper.ReadConfig<ModConfig>();
 
-        if (_config.Machines is null)
-            _config.Machines = Machines.GetNewMachines();
-        else _config.Machines = Machines.SetMachines(_config.Machines);
-
-        helper.WriteConfig(_config);
-
         helper.Events.GameLoop.GameLaunched += OnGameLaunched;
+        helper.Events.GameLoop.DayStarted += OnDayStarted;
         helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         helper.Events.GameLoop.UpdateTicking += OnUpdateTicking;
         helper.Events.Input.ButtonPressed += OnButtonPressed;
     }
 
-    private ModConfig processConfig(ModConfig cfg)
-    {
-        if (cfg.UpdateInterval == 0)
-            cfg.UpdateInterval = 1u;
-
-        MachineConfig[] machines = _config.Machines;
-
-        foreach (MachineConfig machineConfig in machines)
-        {
-            if (!machineConfig.UsePercent && machineConfig.Time <= 0)
-                machineConfig.Time = 10;
-        }
-
-        return cfg;
-    }
-
     private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
     {
         if (Context.IsMainPlayer)
-            this.configureAllMachines();
+            configureAllMachines();
     }
 
     private void OnUpdateTicking(object sender, UpdateTickingEventArgs e)
     {
-        if (Context.IsMainPlayer && e.IsMultipleOf(this._config.UpdateInterval))
-            this.configureAllMachines();
+        if (Context.IsMainPlayer && e.IsMultipleOf(_config.UpdateInterval))
+            configureAllMachines();
+    }
+
+    private void OnDayStarted(object sender, DayStartedEventArgs e)
+    {
+        if (Context.IsMainPlayer)
+            configureAllMachines();
     }
 
     private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
     {
-        if (Context.IsPlayerFree && Game1.currentMinigame == null && (SButton?)e.Button == this._config.ReloadConfigKey)
+        if (Context.IsPlayerFree
+            && Game1.currentMinigame == null
+            && (SButton?)e.Button == _config.ReloadConfigKey)
         {
             _config = processConfig(Helper.ReadConfig<ModConfig>());
             Game1.addHUDMessage(new(I18n.Message(), 2));
-        }
-    }
-
-    private void RemoveObsoleteFiles(IModHelper helper, string[] files)
-    {
-        foreach (var file in files)
-        {
-            string fullPath = Path.Combine(helper.DirectoryPath, file);
-            if (File.Exists(fullPath))
-            {
-                try
-                {
-                    File.Delete(fullPath);
-                    Monitor.Log($"Removed obsolete file '{file}'.", LogLevel.Debug);
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"Failed deleting obsolete file '{file}':\n{ex}", LogLevel.Debug);
-                }
-            }
-        }
-    }
-
-    private void configureAllMachines()
-    {
-        var locations = Locations.GetLocations();
-
-        foreach (MachineConfig cfg in _config.Machines)
-        {
-            foreach (GameLocation item in locations)
-            {
-                bool func(KeyValuePair<Vector2, StardewValley.Object> p) => p.Value.name == cfg.Name;
-                var pairs = item.objects.Pairs;
-                var enumerator2 = pairs.GetEnumerator();
-                try
-                {
-                    while (enumerator2.MoveNext())
-                    {
-                        var current2 = enumerator2.Current;
-
-                        if (func(current2))
-                            this.configureMachine(cfg, current2.Value);
-                    }
-                }
-                finally
-                {
-                    enumerator2.Dispose();
-                }
-            }
-        }
-    }
-
-    private void configureMachine(MachineConfig cfg, StardewValley.Object obj)
-    {
-        Cask val = (Cask)(object)(obj is Cask ? obj : null);
-
-        if (val != null && obj.heldObject.Value != null)
-        {
-            float num = val.heldObject.Value.ParentSheetIndex switch
-            {
-                426 => 4f,
-                424 => 4f,
-                459 => 2f,
-                303 => 1.66f,
-                346 => 2f,
-                _ => 1f
-            };
-
-            if (cfg.UsePercent && Math.Abs(cfg.Time - 100f) > this.EPSILON && (int)Math.Round(val.agingRate.Value * 1000f) % 10 != 1)
-            {
-                val.agingRate.Value = num * 100f / cfg.Time;
-                val.agingRate.Value = (float)Math.Round(val.agingRate.Value, 2);
-                NetFloat agingRate = val.agingRate;
-                agingRate.Value += 0.001f;
-            }
-            else if (!cfg.UsePercent && (int)Math.Round(val.agingRate.Value * 1000f) % 10 != 1)
-            {
-                val.agingRate.Value = val.daysToMature.Value / num * 1440f / cfg.Time;
-                val.agingRate.Value = (float)Math.Round(val.agingRate.Value, 2);
-                NetFloat agingRate2 = val.agingRate;
-                agingRate2.Value += 0.001f;
-            }
-        }
-        else if (obj.MinutesUntilReady % 10 != 8 && obj.MinutesUntilReady > 0)
-        {
-            if (cfg.UsePercent && Math.Abs(cfg.Time - 100f) > this.EPSILON)
-            {
-                obj.MinutesUntilReady = Math.Max((int)(obj.MinutesUntilReady * cfg.Time / 100f / 10f) * 10 - 2, 8);
-            }
-            else if (!cfg.UsePercent)
-            {
-                obj.MinutesUntilReady = Math.Max((int)(cfg.Time / 10f) * 10 - 2, 8);
-            }
         }
     }
 
@@ -262,6 +157,115 @@ public class ModEntry : Mod
                 setValue: val => machine.UsePercent = val
 
             );
+        }
+    }
+
+    private ModConfig processConfig(ModConfig cfg)
+    {
+        if (cfg.UpdateInterval == 0)
+            cfg.UpdateInterval = 1u;
+
+        MachineConfig[] machines = _config.Machines;
+
+        foreach (MachineConfig machineConfig in machines)
+        {
+            if (!machineConfig.UsePercent && machineConfig.Time <= 0)
+                machineConfig.Time = 10;
+        }
+
+        return cfg;
+    }
+
+    private void configureAllMachines()
+    {
+        var locations = Locations.GetLocations();
+
+        foreach (MachineConfig cfg in _config.Machines)
+        {
+            foreach (GameLocation item in locations)
+            {
+                bool func(KeyValuePair<Vector2, StardewValley.Object> p) => p.Value.name == cfg.Name;
+                var pairs = item.objects.Pairs;
+                var enumerator2 = pairs.GetEnumerator();
+                try
+                {
+                    while (enumerator2.MoveNext())
+                    {
+                        var current2 = enumerator2.Current;
+
+                        if (func(current2))
+                            configureMachine(cfg, current2.Value);
+                    }
+                }
+                finally
+                {
+                    enumerator2.Dispose();
+                }
+            }
+        }
+    }
+
+    private void configureMachine(MachineConfig cfg, Object obj)
+    {
+        Cask val = (Cask)(object)(obj is Cask ? obj : null);
+
+        if (val != null && obj.heldObject.Value != null)
+        {
+            float num = val.heldObject.Value.ParentSheetIndex switch
+            {
+                426 => 4f,
+                424 => 4f,
+                459 => 2f,
+                303 => 1.66f,
+                346 => 2f,
+                _ => 1f
+            };
+
+            if (cfg.UsePercent && Math.Abs(cfg.Time - 100f) > this.EPSILON && (int)Math.Round(val.agingRate.Value * 1000f) % 10 != 1)
+            {
+                val.agingRate.Value = num * 100f / cfg.Time;
+                val.agingRate.Value = (float)Math.Round(val.agingRate.Value, 2);
+                NetFloat agingRate = val.agingRate;
+                agingRate.Value += 0.001f;
+            }
+            else if (!cfg.UsePercent && (int)Math.Round(val.agingRate.Value * 1000f) % 10 != 1)
+            {
+                val.agingRate.Value = val.daysToMature.Value / num * 1440f / cfg.Time;
+                val.agingRate.Value = (float)Math.Round(val.agingRate.Value, 2);
+                NetFloat agingRate2 = val.agingRate;
+                agingRate2.Value += 0.001f;
+            }
+        }
+        else if (obj.MinutesUntilReady % 10 != 8 && obj.MinutesUntilReady > 0)
+        {
+            if (cfg.UsePercent && Math.Abs(cfg.Time - 100f) > this.EPSILON)
+            {
+                obj.MinutesUntilReady = Math.Max((int)(obj.MinutesUntilReady * cfg.Time / 100f / 10f) * 10 - 2, 8);
+            }
+            else if (!cfg.UsePercent)
+            {
+                obj.MinutesUntilReady = Math.Max((int)(cfg.Time / 10f) * 10 - 2, 8);
+            }
+        }
+    }
+
+    private void RemoveObsoleteFiles(IModHelper helper, string[] files)
+    {
+        foreach (var file in files)
+        {
+            string fullPath = Path.Combine(helper.DirectoryPath, file);
+            if (File.Exists(fullPath))
+            {
+                try
+                {
+                    File.Delete(fullPath);
+                    Monitor.Log($"Removed obsolete file '{file}'.", LogLevel.Debug);
+                }
+                catch (Exception ex)
+                {
+                    Monitor.Log($"Failed deleting obsolete file '{file}':\n{ex}", LogLevel.Debug);
+                }
+            }
         }
     }
 }
