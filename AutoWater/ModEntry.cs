@@ -38,6 +38,11 @@ public class ModEntry : Mod
                 }
             }
         }
+
+        Building farm = Game1.getFarm().getBuildingByType("Pet Bowl");
+        PetBowl pet = (PetBowl)farm;
+        pet.watered.Value = true;
+        // Monitor.Log("PetBowl is full", LogLevel.Debug);
     }
 
     private void RemoveObsoleteFiles(IModHelper helper, string[] files)
