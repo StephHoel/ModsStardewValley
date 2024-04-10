@@ -1,41 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Utils.Lists;
+﻿namespace Utils.Lists;
 
 public static class ListMachines
 {
     public static readonly List<string> List = new()
     {
         "Bee House",
+        "Bone Mill",
         "Cask",
         "Charcoal Kiln",
         "Cheese Press",
         "Crystalarium",
+        "Dehydrator",
+        "Fish Smoker",
         "Furnace",
+        "Geode Crusher",
         "Heavy Furnace",
+        "Heavy Tapper",
         "Incubator",
         "Keg",
         "Lightning Rod",
         "Loom",
         "Mayonnaise Machine",
         "Oil Maker",
+        "Ostrich Incubator",
         "Preserves Jar",
         "Recycling Machine",
         "Seed Maker",
         "Slime Egg-Press",
         "Slime Incubator",
-        "Tapper",
-        "Worm Bin",
-        "Fish Smoker",
-        "Dehydrator",
         "Solar Panel",
-        "Ostrich Incubator",
-        "Heavy Tapper",
-        "Bone Mill",
-        "Geode Crusher"
+        "Tapper",
+        "Worm Bin"
     };
 }
