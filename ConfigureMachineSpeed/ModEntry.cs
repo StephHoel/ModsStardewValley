@@ -4,8 +4,6 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Objects;
-using Utils;
-using Utils.Config;
 using Object = StardewValley.Object;
 
 namespace ConfigureMachineSpeed;
@@ -199,12 +197,19 @@ public class ModEntry : Mod
 
     private void configureAllMachines()
     {
-        var locations = Locations.GetLocations();
+        var locations = Game1.locations.Concat(
+                            from location in Game1.locations
+                            from building in location.buildings
+                            where building.indoors.Value != null
+                            select building.indoors.Value
+                        );
 
-        foreach (MachineConfig cfg in _config.Machines)
+        foreach (GameLocation item in locations)
         {
-            foreach (GameLocation item in locations)
+            foreach (MachineConfig cfg in _config.Machines)
             {
+                //Monitor.Log($"Machine {cfg.Name} in {item.Name}", LogLevel.Debug);
+
                 bool func(KeyValuePair<Vector2, StardewValley.Object> p) => p.Value.name == cfg.Name;
                 var pairs = item.objects.Pairs;
                 var enumerator2 = pairs.GetEnumerator();
