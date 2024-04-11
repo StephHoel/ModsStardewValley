@@ -1,6 +1,4 @@
 ﻿using StardewModdingAPI;
-using Utils.Config;
-using static StardewValley.Menus.CharacterCustomization;
 
 namespace ConfigureMachineSpeed;
 
@@ -19,8 +17,7 @@ internal class ModConfig
 
     private static MachineConfig[] DefaultMachines()
     {
-        var machinesDefault = Utils.Machines.GetNewMachines();
+        var machinesDefault = ConfigureMachineSpeed.Machines.GetNewMachines();
         return machinesDefault;
     }
-
 }

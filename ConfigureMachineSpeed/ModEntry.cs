@@ -4,8 +4,6 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Objects;
-using Utils;
-using Utils.Config;
 using Object = StardewValley.Object;
 
 namespace ConfigureMachineSpeed;
@@ -47,6 +45,27 @@ public class ModEntry : Mod
     {
         if (Context.IsMainPlayer)
             configureAllMachines();
+
+        var location = Game1.locations;
+
+        foreach (var item in location)
+        {
+            //foreach (var cons in item.buildings)
+            //{
+            //    // construções existentes
+            //    foreach (var building in cons.buildingType)
+            //    {
+            //        // build = cons.buildingType.Value
+            //        Monitor.Log($"Construction {building} found in {cons.buildingType.Value}.", LogLevel.Debug);
+            //    }
+            //}
+
+            //// objetos em cada locação
+            //foreach (var value in item.objects.Values)
+            //{
+            //    Monitor.Log($"Object {value.Name} / {value.DisplayName} found in {item.Name}.", LogLevel.Debug);
+            //}
+        }
     }
 
     private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -178,12 +197,19 @@ public class ModEntry : Mod
 
     private void configureAllMachines()
     {
-        var locations = Locations.GetLocations();
+        var locations = Game1.locations.Concat(
+                            from location in Game1.locations
+                            from building in location.buildings
+                            where building.indoors.Value != null
+                            select building.indoors.Value
+                        );
 
-        foreach (MachineConfig cfg in _config.Machines)
+        foreach (GameLocation item in locations)
         {
-            foreach (GameLocation item in locations)
+            foreach (MachineConfig cfg in _config.Machines)
             {
+                //Monitor.Log($"Machine {cfg.Name} in {item.Name}", LogLevel.Debug);
+
                 bool func(KeyValuePair<Vector2, StardewValley.Object> p) => p.Value.name == cfg.Name;
                 var pairs = item.objects.Pairs;
                 var enumerator2 = pairs.GetEnumerator();
