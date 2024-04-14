@@ -41,6 +41,7 @@ public class Machines
         "Lightning Rod",
         "Loom",
         "Mayonnaise Machine",
+        "Mushroom Log",
         "Oil Maker",
         "Ostrich Incubator",
         "Preserves Jar",
@@ -52,4 +53,17 @@ public class Machines
         "Tapper",
         "Worm Bin"
     ];
+}
+
+public class MachinesComparer : IEqualityComparer<MachineConfig>
+{
+    public bool Equals(MachineConfig x, MachineConfig y)
+    {
+        return x.Name == y.Name;
+    }
+
+    public int GetHashCode(MachineConfig obj)
+    {
+        return obj.Name.GetHashCode();
+    }
 }
