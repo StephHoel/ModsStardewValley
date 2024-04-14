@@ -22,6 +22,18 @@ public class ModEntry : Mod
 
         _config = helper.ReadConfig<ModConfig>();
 
+        // Check if there are new machines that are not in the config file
+        var newMachines = Machines.GetNewMachines();
+        if (_config.Machines.Length != newMachines.Length)
+        {
+            var machinesExcept = newMachines.Except(_config.Machines, new MachinesComparer());
+
+            var mac = _config.Machines.Concat(machinesExcept).ToArray();
+            _config.Machines = mac;
+
+            helper.WriteConfig(_config);
+        }
+
         helper.Events.GameLoop.GameLaunched += OnGameLaunched;
         helper.Events.GameLoop.DayStarted += OnDayStarted;
         helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
@@ -45,27 +57,6 @@ public class ModEntry : Mod
     {
         if (Context.IsMainPlayer)
             configureAllMachines();
-
-        var location = Game1.locations;
-
-        foreach (var item in location)
-        {
-            //foreach (var cons in item.buildings)
-            //{
-            //    // construções existentes
-            //    foreach (var building in cons.buildingType)
-            //    {
-            //        // build = cons.buildingType.Value
-            //        Monitor.Log($"Construction {building} found in {cons.buildingType.Value}.", LogLevel.Debug);
-            //    }
-            //}
-
-            //// objetos em cada locação
-            //foreach (var value in item.objects.Values)
-            //{
-            //    Monitor.Log($"Object {value.Name} / {value.DisplayName} found in {item.Name}.", LogLevel.Debug);
-            //}
-        }
     }
 
     private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -153,6 +144,7 @@ public class ModEntry : Mod
                         "Heavy Tapper" => I18n.HeavyTapper(),
                         "Bone Mill" => I18n.BoneMill(),
                         "Geode Crusher" => I18n.GeodeCrusher(),
+                        "Mushroom Log" => I18n.MushroomLog(),
                         _ => string.Empty,
                     };
                 }
