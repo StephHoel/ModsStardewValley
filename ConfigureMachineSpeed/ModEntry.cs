@@ -139,6 +139,7 @@ public class ModEntry : Mod
                         "Worm Bin" => I18n.WormBin(),
                         "Fish Smoker" => I18n.FishSmoker(),
                         "Dehydrator" => I18n.Dehydrator(),
+                        "Deconstructor" => I18n.Deconstructor(),
                         "Solar Panel" => I18n.SolarPanel(),
                         "Ostrich Incubator" => I18n.OstrichIncubator(),
                         "Heavy Tapper" => I18n.HeavyTapper(),
