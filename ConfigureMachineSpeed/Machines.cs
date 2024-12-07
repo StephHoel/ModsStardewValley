@@ -31,6 +31,7 @@ public class Machines
         "Cheese Press",
         "Crystalarium",
         "Dehydrator",
+        "Deconstructor",
         "Fish Smoker",
         "Furnace",
         "Geode Crusher",
