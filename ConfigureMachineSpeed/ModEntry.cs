@@ -146,6 +146,7 @@ public class ModEntry : Mod
                         "Bone Mill" => I18n.BoneMill(),
                         "Geode Crusher" => I18n.GeodeCrusher(),
                         "Mushroom Log" => I18n.MushroomLog(),
+                        "Wood Chipper" => I18n.WoodChipper(),
                         _ => string.Empty,
                     };
                 }
