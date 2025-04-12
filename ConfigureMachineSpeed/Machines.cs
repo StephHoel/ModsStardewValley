@@ -52,7 +52,8 @@ public class Machines
         "Slime Incubator",
         "Solar Panel",
         "Tapper",
-        "Worm Bin"
+        "Wood Chipper",
+        "Worm Bin",
     ];
 }
 
