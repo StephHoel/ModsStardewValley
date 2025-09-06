@@ -33,7 +33,7 @@ public class Machines
         { "Solar Panel", I18n.SolarPanel },
         { "Tapper", I18n.Tapper },
         { "Wood Chipper", I18n.WoodChipper },
-        { "Worm Bin", I18n.WormBin }
+        { "Worm Bin", I18n.WormBin },
     };
 
     public static string GetTranslation(string machineName)
