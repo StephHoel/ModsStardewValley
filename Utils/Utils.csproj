@@ -7,12 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Config\**" />
-    <EmbeddedResource Remove="Config\**" />
-    <None Remove="Config\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Stardew Valley">
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Stardew Valley.dll</HintPath>
     </Reference>

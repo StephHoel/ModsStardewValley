@@ -27,19 +27,19 @@ on the wiki for help contributing translations.
 
 (❑ = untranslated, ↻ = partly translated, ✓ = fully translated)
 
-&nbsp;     | Add Money                  | Configure Machine Speed
-:--------- | :------------------------- | :--------------------------------------
-Chinese    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/zh.json)
-French     | [❑](AddMoney/i18n)         | [❑](ConfigureMachineSpeed/i18n)
-German     | [❑](AddMoney/i18n)         | [❑](ConfigureMachineSpeed/i18n)
-Hungarian  | [❑](AddMoney/i18n)         | [❑](ConfigureMachineSpeed/i18n)
-Italian    | [❑](AddMoney/i18n)         | [❑](ConfigureMachineSpeed/i18n)
-Japanese   | [❑](AddMoney/i18n)         | [❑](ConfigureMachineSpeed/i18n)
-Korean     | [❑](AddMoney/i18n)         | [❑](ConfigureMachineSpeed/i18n)
-Portuguese | [✓](AddMoney/i18n/pt.json) | [✓](ConfigureMachineSpeed/i18n/pt.json)
-Russian    | [❑](AddMoney/i18n)         | [❑](ConfigureMachineSpeed/i18n)
-Spanish    | [❑](AddMoney/i18n)         | [❑](ConfigureMachineSpeed/i18n)
-Turkish    | [❑](AddMoney/i18n)         | [❑](ConfigureMachineSpeed/i18n)
+&nbsp;     | Add Money                   | Configure Machine Speed
+:--------- | :-------------------------- | :--------------------------------------
+Chinese    | [❑](AddMoney/i18n)         | [❑](ConfigureMachineSpeed/i18n/zh.json)
+French     | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/fr.json)
+German     | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/de.json)
+Hungarian  | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/hu.json)
+Italian    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/it.json)
+Japanese   | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/ja.json)
+Korean     | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/ko.json)
+Portuguese | [✓](AddMoney/i18n/pt.json)  | [✓](ConfigureMachineSpeed/i18n/pt.json)
+Russian    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/ru.json)
+Spanish    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/es.json)
+Turkish    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/tr.json)
 
 <!-- End translations -->
 

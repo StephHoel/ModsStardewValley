@@ -10,7 +10,6 @@ public class ModEntry : Mod
     public IModHelper Helper { get; set; }
 
     private EventHandlers _eventHandlers;
-    private MachineConfigurator _machineConfigurator;
 
     public override void Entry(IModHelper helper)
     {
@@ -20,8 +19,7 @@ public class ModEntry : Mod
         FileUtils.RemoveObsoleteFiles(helper, ["Utils.pdb"], Monitor);
 
         Config = helper.ReadConfig<ModConfig>();
-        _machineConfigurator = new MachineConfigurator();
-        _eventHandlers = new EventHandlers(this, _machineConfigurator);
+        _eventHandlers = new EventHandlers(this, new MachineConfigurator());
 
         // Check if there are new machines that are not in the config file
         var newMachines = Machines.GetNewMachines();
