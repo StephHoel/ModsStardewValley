@@ -13,35 +13,26 @@ This codes are based on:
 * Configure Machine Speed SDV1.6 by [BayesianBandit](https://www.nexusmods.com/stardewvalley/mods/3519)
 
 ## Translating the mods
-<!--
 
-    This section is auto-generated using a script, there's no need to edit it manually.
-    https://github.com/Pathoschild/StardewScripts/tree/main/create-translation-summary
+The mods can be translated into any language supported by the game, and SMAPI will automatically use the right translations.
 
--->
-The mods can be translated into any language supported by the game, and SMAPI will automatically
-use the right translations.
-
-Contributions are welcome! See [Modding:Translations](https://stardewvalleywiki.com/Modding:Translations)
-on the wiki for help contributing translations.
+Contributions are welcome! See [Modding:Translations](https://stardewvalleywiki.com/Modding:Translations) on the wiki for help contributing translations.
 
 (❑ = untranslated, ↻ = partly translated, ✓ = fully translated)
 
-&nbsp;     | Add Money                   | Configure Machine Speed
-:--------- | :-------------------------- | :--------------------------------------
-Chinese    | [❑](AddMoney/i18n)         | [❑](ConfigureMachineSpeed/i18n/zh.json)
+&nbsp;     | Add Money                  | Configure Machine Speed
+:--------- | :------------------------- | :--------------------------------------
+Chinese    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/zh.json)
 French     | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/fr.json)
 German     | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/de.json)
 Hungarian  | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/hu.json)
 Italian    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/it.json)
 Japanese   | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/ja.json)
 Korean     | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/ko.json)
-Portuguese | [✓](AddMoney/i18n/pt.json)  | [✓](ConfigureMachineSpeed/i18n/pt.json)
+Portuguese | [✓](AddMoney/i18n/pt.json) | [✓](ConfigureMachineSpeed/i18n/pt.json)
 Russian    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/ru.json)
 Spanish    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/es.json)
 Turkish    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/tr.json)
-
-<!-- End translations -->
 
 ## Dev
 
