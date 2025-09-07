@@ -22,17 +22,17 @@ Contributions are welcome! See [Modding:Translations](https://stardewvalleywiki.
 
 &nbsp;     | Add Money                  | Configure Machine Speed
 :--------- | :------------------------- | :--------------------------------------
-Chinese    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/zh.json)
-French     | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/fr.json)
-German     | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/de.json)
-Hungarian  | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/hu.json)
-Italian    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/it.json)
-Japanese   | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/ja.json)
-Korean     | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/ko.json)
+Chinese    | [✓](AddMoney/i18n/zh.json) | [✓](ConfigureMachineSpeed/i18n/zh.json)
+French     | [✓](AddMoney/i18n/fr.json) | [✓](ConfigureMachineSpeed/i18n/fr.json)
+German     | [✓](AddMoney/i18n/de.json) | [✓](ConfigureMachineSpeed/i18n/de.json)
+Hungarian  | [✓](AddMoney/i18n/hu.json) | [✓](ConfigureMachineSpeed/i18n/hu.json)
+Italian    | [✓](AddMoney/i18n/it.json) | [✓](ConfigureMachineSpeed/i18n/it.json)
+Japanese   | [✓](AddMoney/i18n/ja.json) | [✓](ConfigureMachineSpeed/i18n/ja.json)
+Korean     | [✓](AddMoney/i18n/ko.json) | [✓](ConfigureMachineSpeed/i18n/ko.json)
 Portuguese | [✓](AddMoney/i18n/pt.json) | [✓](ConfigureMachineSpeed/i18n/pt.json)
-Russian    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/ru.json)
-Spanish    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/es.json)
-Turkish    | [❑](AddMoney/i18n)         | [✓](ConfigureMachineSpeed/i18n/tr.json)
+Russian    | [✓](AddMoney/i18n/ru.json) | [✓](ConfigureMachineSpeed/i18n/ru.json)
+Spanish    | [✓](AddMoney/i18n/es.json) | [✓](ConfigureMachineSpeed/i18n/es.json)
+Turkish    | [✓](AddMoney/i18n/tr.json) | [✓](ConfigureMachineSpeed/i18n/tr.json)
 
 ## Dev
 

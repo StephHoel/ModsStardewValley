@@ -4,8 +4,10 @@ namespace Utils;
 
 public static class FileUtils
 {
-    public static void RemoveObsoleteFiles(IModHelper helper, string[] files, IMonitor monitor)
+    public static void RemoveObsoleteFiles(IModHelper helper, IMonitor monitor)
     {
+        var files = new string[] { "Utils.pdb" };
+
         foreach (var file in files)
         {
             string fullPath = Path.Combine(helper.DirectoryPath, file);
