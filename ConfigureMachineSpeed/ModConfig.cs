@@ -1,13 +1,11 @@
 ﻿using StardewModdingAPI;
 
-namespace ConfigureMachineSpeed;
+namespace StephHoel.ConfigureMachineSpeed;
 
-internal class ModConfig
+public class ModConfig
 {
     public uint UpdateInterval { get; set; } = 10u;
-
-    public SButton? ReloadConfigKey { get; set; } = SButton.L;
-
+    public SButton ReloadConfigKey { get; set; } = SButton.L;
     public MachineConfig[] Machines { get; set; }
 
     public ModConfig()

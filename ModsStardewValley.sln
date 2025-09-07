@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslationSummary", "TranslationSummary\TranslationSummary.csproj", "{EE31D8C4-EA7A-456A-A7B2-E2B2C39D8346}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,11 +43,18 @@ Global
 		{FCC6C9C0-499E-4229-887B-C94AD98EBCDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCC6C9C0-499E-4229-887B-C94AD98EBCDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCC6C9C0-499E-4229-887B-C94AD98EBCDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE31D8C4-EA7A-456A-A7B2-E2B2C39D8346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE31D8C4-EA7A-456A-A7B2-E2B2C39D8346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE31D8C4-EA7A-456A-A7B2-E2B2C39D8346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE31D8C4-EA7A-456A-A7B2-E2B2C39D8346}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {975859C1-6E1C-4C3A-9B91-E5E25A750487}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		common.targets*{5fe5a55c-1cfe-4b52-9b45-3e087e44c836}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
