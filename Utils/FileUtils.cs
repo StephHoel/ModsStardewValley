@@ -12,17 +12,17 @@ public static class FileUtils
         {
             string fullPath = Path.Combine(helper.DirectoryPath, file);
 
-            if (File.Exists(fullPath))
+            if (!File.Exists(fullPath))
+                continue;
+
+            try
             {
-                try
-                {
-                    File.Delete(fullPath);
-                    monitor.Log($"Removed obsolete file '{file}'.", LogLevel.Debug);
-                }
-                catch (Exception ex)
-                {
-                    monitor.Log($"Failed deleting obsolete file '{file}':\n{ex}", LogLevel.Debug);
-                }
+                File.Delete(fullPath);
+                monitor.Log($"Removed obsolete file '{file}'.", LogLevel.Debug);
+            }
+            catch (Exception ex)
+            {
+                monitor.Log($"Failed deleting obsolete file '{file}':\n{ex}", LogLevel.Debug);
             }
         }
     }
