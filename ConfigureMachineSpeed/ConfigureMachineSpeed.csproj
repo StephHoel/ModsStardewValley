@@ -4,10 +4,10 @@
 		<Version>1.2.2</Version>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<RootNamespace>StephHoel.ConfigureMachineSpeed</RootNamespace>
 		<Nullable>enable</Nullable>
 		<GamePath></GamePath>
 		<LangVersion>Latest</LangVersion>
+		<RootNamespace>StephHoel.ConfigureMachineSpeed</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -20,5 +20,4 @@
 	</ItemGroup>
 	
 	<Import Project="..\common.targets" Label="Shared" />
-
 </Project>
