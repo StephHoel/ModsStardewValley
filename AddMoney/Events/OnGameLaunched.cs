@@ -1,7 +1,7 @@
 ﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
 
-namespace AddMoney.Events;
+namespace StephHoel.AddMoney.Events;
 
 /// <summary>
 /// Handles the GameLaunched event and config menu registration.

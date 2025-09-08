@@ -1,8 +1,8 @@
-﻿using AddMoney.Events;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
+using StephHoel.AddMoney.Events;
 using Utils;
 
-namespace AddMoney;
+namespace StephHoel.AddMoney;
 
 /// <summary>The mod entry point.</summary>
 public class ModEntry : Mod

@@ -2,7 +2,7 @@
 using StardewModdingAPI.Events;
 using StardewValley;
 
-namespace AddMoney.Events;
+namespace StephHoel.AddMoney.Events;
 
 public class OnButtonPressed(ModConfig config, IMonitor monitor)
 {

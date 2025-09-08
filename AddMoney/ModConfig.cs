@@ -1,6 +1,6 @@
 ﻿using StardewModdingAPI;
 
-namespace AddMoney;
+namespace StephHoel.AddMoney;
 
 public class ModConfig
 {
