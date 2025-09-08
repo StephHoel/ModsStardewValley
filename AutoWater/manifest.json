@@ -1,10 +1,10 @@
 ﻿{
   "Name": "AutoWater",
   "Author": "Steph Hoel",
-  "Version": "1.1.5",
-  "MinimumApiVersion": "3.0.0",
+  "Version": "%ProjectVersion%",
   "description": "Automatically water your plants at the start of each day.",
   "UniqueID": "StephHoel.AutoWater",
   "EntryDll": "AutoWater.dll",
+  "MinimumApiVersion": "4.2.0",
   "UpdateKeys": [ "Nexus:21022" ]
 }

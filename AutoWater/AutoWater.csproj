@@ -1,22 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<Version>1.2.0</Version>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<GamePath></GamePath>
 		<LangVersion>Latest</LangVersion>
+		<RootNamespace>StephHoel.AutoWater</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Images\**" />
-	  <EmbeddedResource Remove="Images\**" />
-	  <None Remove="Images\**" />
+		<PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.4.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
-	</ItemGroup>
-
-	<Import Project="..\common.targets" />
+	<Import Project="..\common.targets" Label="Shared" />
 </Project>

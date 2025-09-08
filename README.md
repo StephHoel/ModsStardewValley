@@ -41,3 +41,12 @@ Turkish    | [✓](AddMoney/i18n/tr.json) | [✓](ConfigureMachineSpeed/i18n/tr.
 ## Thanks
 
 Thanks for Pathoschild to help me.
+
+<!-- Para atualizar o repositório local com o remoto e apagar a branch local:
+
+git checkout main
+
+git fetch --prune
+
+git branch -D nome_da_branch
+-->

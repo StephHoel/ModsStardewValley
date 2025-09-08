@@ -4,71 +4,56 @@ using StardewValley.Buildings;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 
-namespace AutoWater;
+namespace StephHoel.AutoWater;
 
 public class ModEntry : Mod
 {
     public override void Entry(IModHelper helper)
     {
-        RemoveObsoleteFiles(helper, ["Utils.pdb", "AutoWater.pdb"]);
-
-        helper.Events.GameLoop.DayStarted += WaterEverything;
+        helper.Events.GameLoop.DayStarted += OnDayStarted;
     }
 
-    private async void WaterEverything(object sender, EventArgs e)
+    private void OnDayStarted(object? sender, EventArgs e)
+    {
+        WaterAllLocations();
+        WaterPetBowl();
+    }
+
+    private static void WaterAllLocations()
     {
         foreach (var location in Game1.locations)
         {
-            //Monitor.Log($"==========> {location.Name} is {(location is null ? "null" : "not null")}", LogLevel.Debug);
-
-            // Garden Pots
-            var objects = location.objects.Values.OfType<IndoorPot>();
-            foreach (var pot in objects)
-            {
-                //Monitor.Log($"{location.Name} with Garden Pot to add water", LogLevel.Debug);
-                pot.Water();
-            }
-
-            // Hoe Dirts
-            var terrains = location.terrainFeatures.Values.OfType<HoeDirt>();
-            foreach (var terrain in terrains)
-            {
-                //Monitor.Log($"{location.Name} with HoeDirt to add water", LogLevel.Debug);
-                terrain.state.Value = 1;
-            }
-        }
-
-        // Water to pet bowl
-        try
-        {
-            var farmPetBowl = Game1.getFarm().getBuildingByType("Pet Bowl");
-            PetBowl pet = (PetBowl)farmPetBowl;
-            pet.watered.Value = true;
-            // Monitor.Log("PetBowl is full", LogLevel.Debug);
-        }
-        catch
-        { // For eventually error
-            Monitor.Log("PetBowl do not exist", LogLevel.Debug);
+            WaterGardenPots(location);
+            WaterHoeDirts(location);
         }
     }
 
-    private void RemoveObsoleteFiles(IModHelper helper, string[] files)
+    private static void WaterGardenPots(GameLocation location)
     {
-        foreach (var file in files)
+        foreach (var pot in location.objects.Values.OfType<IndoorPot>())
+            pot.Water();
+    }
+
+    private static void WaterHoeDirts(GameLocation location)
+    {
+        foreach (var terrain in location.terrainFeatures.Values.OfType<HoeDirt>())
+            terrain.state.Value = 1;
+    }
+
+    private void WaterPetBowl()
+    {
+        try
         {
-            string fullPath = Path.Combine(helper.DirectoryPath, file);
-            if (File.Exists(fullPath))
-            {
-                try
-                {
-                    File.Delete(fullPath);
-                    Monitor.Log($"Removed obsolete file '{file}'.", LogLevel.Debug);
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"Failed deleting obsolete file '{file}':\n{ex}");
-                }
-            }
+            var farmPetBowl = Game1.getFarm().getBuildingByType("Pet Bowl");
+
+            if (farmPetBowl is PetBowl pet)
+                pet.watered.Value = true;
+            else
+                Monitor.Log("PetBowl do not exist", LogLevel.Debug);
+        }
+        catch
+        {
+            Monitor.Log("PetBowl do not exist", LogLevel.Debug);
         }
     }
 }
