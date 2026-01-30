@@ -2,17 +2,17 @@ namespace StephHoel.ConfigureMachineSpeed;
 
 public class ConfigUtils
 {
-    public static ModConfig ProcessConfig(ModConfig cfg, ModConfig currentConfig)
+    public static ModConfig Normalize(ModConfig cfg)
     {
         if (cfg.UpdateInterval == 0)
             cfg.UpdateInterval = 1u;
 
-        MachineConfig[] machines = currentConfig.Machines;
+        cfg.Machines ??= Machines.GetNewMachines();
 
-        foreach (MachineConfig machineConfig in machines)
+        foreach (var m in cfg.Machines)
         {
-            if (!machineConfig.UsePercent && machineConfig.Time <= 0)
-                machineConfig.Time = 10;
+            if (!m.UsePercent && m.Time <= 0)
+                m.Time = 10;
         }
 
         return cfg;

@@ -7,4 +7,6 @@ public class MachineConfig(string Name)
     public int Time { get; set; } = 100;
 
     public bool UsePercent { get; set; } = true;
+
+    public bool IsDefault() => UsePercent && Time == 100;
 }
