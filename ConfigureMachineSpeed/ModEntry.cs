@@ -52,18 +52,18 @@ public class ModEntry : Mod
                     setConfig: cfg => this.Config = cfg
                 );
 
-        var newMachines = Machines.GetNewMachines();
+        // var newMachines = Machines.GetNewMachines();
 
-        if (Config.Machines.Length != newMachines.Length)
-        {
-            var machinesExcept = newMachines.Except(Config.Machines, new MachinesComparer());
+        // if (Config.Machines.Length != newMachines.Length)
+        // {
+        //     var machinesExcept = newMachines.Except(Config.Machines, new MachinesComparer());
 
-            var mac = Config.Machines.Concat(machinesExcept).ToArray();
+        //     var mac = Config.Machines.Concat(machinesExcept).ToArray();
 
-            Config.Machines = mac;
+        //     Config.Machines = mac;
 
-            helper.WriteConfig(Config);
-        }
+        //     helper.WriteConfig(Config);
+        // }
 
         helper.Events.GameLoop.GameLaunched += onGameLaunched.Main;
         helper.Events.GameLoop.DayStarted += onDayStarted.Main;

@@ -12,6 +12,12 @@ public class OnGameLaunched(
     public void Main(object? sender, GameLaunchedEventArgs e)
     {
         var config = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>());
+        var updatedMachines = Machines.SetMachines(config.Machines);
+        var hasMachineChanges = !new HashSet<MachineConfig>(config.Machines, new MachinesComparer()).SetEquals(updatedMachines);
+
+        if (hasMachineChanges)
+            config.Machines = updatedMachines;
+
         helper.WriteConfig(config);
 
         setConfig(config);
