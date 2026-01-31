@@ -3,11 +3,24 @@ using StardewModdingAPI.Events;
 
 namespace StephHoel.ConfigureMachineSpeed.Events;
 
-public class OnUpdateTicking(ModConfig config, MachineConfigurator machineConfigurator)
+public class OnUpdateTicking(
+    IModHelper helper,
+    MachineConfigurator configurator,
+    Func<ModConfig> getConfig,
+    Action<ModConfig> setConfig
+)
 {
     public void Main(object? sender, UpdateTickingEventArgs e)
     {
-        if (Context.IsMainPlayer && e.IsMultipleOf(config.UpdateInterval))
-            machineConfigurator.ConfigureAllMachines(config);
+        var config = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>());
+        helper.WriteConfig(config);
+
+        setConfig(config);
+
+        if (!Context.IsMainPlayer)
+            return;
+
+        if (e.IsMultipleOf(config.UpdateInterval))
+            configurator.ConfigureAllMachines(config);
     }
 }

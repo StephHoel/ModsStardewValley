@@ -1,4 +1,8 @@
-﻿namespace StephHoel.ConfigureMachineSpeed;
+﻿using StardewModdingAPI;
+using StardewValley;
+using StardewValley.GameData.Machines;
+
+namespace StephHoel.ConfigureMachineSpeed;
 
 public class Machines
 {
@@ -35,33 +39,74 @@ public class Machines
         { "Wood Chipper", I18n.WoodChipper },
         { "Worm Bin", I18n.WormBin },
     };
+    private static List<string>? CachedMachineNames;
+    private static bool CacheIncludesGameData;
 
     public static string GetTranslation(string machineName)
     {
         if (TranslationMap.TryGetValue(machineName, out var translationFunc))
             return translationFunc();
 
+        if (Context.IsGameLaunched)
+        {
+            var itemData = ItemRegistry.GetData(machineName);
+            if (!string.IsNullOrWhiteSpace(itemData?.DisplayName))
+                return itemData.DisplayName;
+        }
+
         return machineName;
     }
 
     public static List<string> MachineNames
-        => [.. TranslationMap.Select(TranslationMap => TranslationMap.Key)];
+        => GetMachineNames();
 
-    public static MachineConfig[] GetNewMachines()
+    public static MachineConfig[] GetNewMachines(IEnumerable<string>? machineNames = null)
     {
-        var source = MachineNames;
+        var source = machineNames?.Distinct(StringComparer.Ordinal).ToList() ?? MachineNames;
         var newMachines = source.Select(x => new MachineConfig(x)).ToArray();
         return newMachines;
     }
 
-    public static MachineConfig[] SetMachines(MachineConfig?[] machines)
+    public static MachineConfig[] SetMachines(IEnumerable<MachineConfig?> machines, IEnumerable<string>? machineNames = null)
     {
         var machinesSet = new HashSet<MachineConfig>(machines.Where(m => m != null).Cast<MachineConfig>(), new MachinesComparer());
 
-        foreach (var machine in GetNewMachines())
+        foreach (var machine in GetNewMachines(machineNames))
             machinesSet.Add(machine);
 
         return [.. machinesSet];
+    }
+
+    private static List<string> GetMachineNames()
+    {
+        if (CachedMachineNames is not null && (!Context.IsGameLaunched || CacheIncludesGameData))
+            return CachedMachineNames;
+
+        var machineNames = new HashSet<string>(TranslationMap.Select(translationMap => translationMap.Key), StringComparer.Ordinal);
+
+        if (Context.IsGameLaunched)
+        {
+            var machineData = Game1.content.Load<Dictionary<string, MachineData>>("Data/Machines");
+
+            foreach (var machineId in machineData.Keys)
+            {
+                var itemData = ItemRegistry.GetData(machineId);
+                var name = itemData?.InternalName;
+
+                if (string.IsNullOrWhiteSpace(name))
+                    name = itemData?.DisplayName;
+
+                if (string.IsNullOrWhiteSpace(name))
+                    name = machineId;
+
+                machineNames.Add(name);
+            }
+        }
+
+        CachedMachineNames = [.. machineNames.OrderBy(name => name, StringComparer.OrdinalIgnoreCase)];
+        CacheIncludesGameData = Context.IsGameLaunched;
+
+        return CachedMachineNames;
     }
 }
 

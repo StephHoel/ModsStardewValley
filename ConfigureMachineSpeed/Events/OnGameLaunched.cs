@@ -3,10 +3,25 @@ using StardewModdingAPI.Events;
 
 namespace StephHoel.ConfigureMachineSpeed.Events;
 
-public class OnGameLaunched(ModConfig config, IModHelper helper, IManifest manifest)
+public class OnGameLaunched(
+    IManifest manifest,
+    IModHelper helper,
+    Action<ModConfig> setConfig
+)
 {
     public void Main(object? sender, GameLaunchedEventArgs e)
     {
+        var config = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>());
+        var updatedMachines = Machines.SetMachines(config.Machines);
+        var hasMachineChanges = !new HashSet<MachineConfig>(config.Machines, new MachinesComparer()).SetEquals(updatedMachines);
+
+        if (hasMachineChanges)
+            config.Machines = updatedMachines;
+
+        helper.WriteConfig(config);
+
+        setConfig(config);
+
         // get Generic Mod Config Menu's API (if it's installed)
         var configMenu = helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
         if (configMenu is null) return;

@@ -6,33 +6,51 @@ namespace StephHoel.ConfigureMachineSpeed;
 
 public class ModEntry : Mod
 {
+    private ModConfig Config = null!;
+    private MachineConfigurator Configurator = null!;
+
     public override void Entry(IModHelper helper)
     {
         I18n.Init(helper.Translation);
         FileUtils.RemoveObsoleteFiles(helper, Monitor);
 
-        var configurator = new MachineConfigurator();
+        Config = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>());
+        helper.WriteConfig(Config);
 
-        var config = helper.ReadConfig<ModConfig>();
+        Configurator = new MachineConfigurator();
 
-        var onGameLaunched = new OnGameLaunched(config, helper, ModManifest);
-        var onSaveLoaded = new OnSaveLoaded(config, configurator);
-        var onDayStarted = new OnDayStarted(config, configurator);
-        var onUpdateTicking = new OnUpdateTicking(config, configurator);
-        var onButtonPressed = new OnButtonPressed(config, helper);
+        var onGameLaunched = new OnGameLaunched(
+                    ModManifest,
+                    helper,
+                    setConfig: cfg => this.Config = cfg
+                );
 
-        var newMachines = Machines.GetNewMachines();
+        var onSaveLoaded = new OnSaveLoaded(
+                    helper,
+                    Configurator,
+                    setConfig: cfg => this.Config = cfg
+                );
 
-        if (config.Machines.Length != newMachines.Length)
-        {
-            var machinesExcept = newMachines.Except(config.Machines, new MachinesComparer());
-        
-            var mac = config.Machines.Concat(machinesExcept).ToArray();
-            
-            config.Machines = mac;
-            
-            helper.WriteConfig(config);
-        }
+        var onDayStarted = new OnDayStarted(
+                    helper,
+                    Configurator,
+                    setConfig: cfg => this.Config = cfg
+                );
+
+        var onUpdateTicking = new OnUpdateTicking(
+                    helper,
+                    Configurator,
+                    getConfig: () => this.Config,
+                    setConfig: cfg => this.Config = cfg
+                );
+
+        var onButtonPressed = new OnButtonPressed(
+                    helper,
+                    Monitor,
+                    Configurator,
+                    getConfig: () => this.Config,
+                    setConfig: cfg => this.Config = cfg
+                );
 
         helper.Events.GameLoop.GameLaunched += onGameLaunched.Main;
         helper.Events.GameLoop.DayStarted += onDayStarted.Main;
