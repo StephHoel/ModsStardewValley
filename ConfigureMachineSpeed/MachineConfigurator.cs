@@ -37,19 +37,38 @@ public class MachineConfigurator
         if (cfg.UsePercent && cfg.Time == 100)
             return;
 
-        if (obj.modData.TryGetValue(AppliedKey, out string applied) && applied == "1")
+        if (obj.MinutesUntilReady <= 0)
+        {
+            obj.modData.Remove(OriginalKey);
+            obj.modData.Remove(AppliedKey);
             return;
+        }
 
         int original = obj.MinutesUntilReady;
-        if (original <= 0)
-            return;
+        if (obj.modData.TryGetValue(OriginalKey, out string storedOriginal) &&
+            int.TryParse(storedOriginal, out int parsedOriginal) &&
+            parsedOriginal > 0)
+            original = parsedOriginal;
 
         int target = cfg.UsePercent
             ? Math.Max(1, (int)Math.Ceiling(original * (cfg.Time / 100.0)))
             : Math.Max(1, cfg.Time);
 
+        if (obj.modData.TryGetValue(AppliedKey, out string applied))
+        {
+            if (int.TryParse(applied, out int appliedValue))
+            {
+                if (appliedValue == target && obj.MinutesUntilReady == target)
+                    return;
+            }
+            else if (applied == "1" && obj.MinutesUntilReady == target)
+            {
+                return;
+            }
+        }
+
         obj.modData[OriginalKey] = original.ToString();
-        obj.modData[AppliedKey] = "1";
+        obj.modData[AppliedKey] = target.ToString();
         obj.MinutesUntilReady = target;
 
         // if (obj is Cask val && obj.heldObject.Value != null)

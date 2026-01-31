@@ -12,8 +12,6 @@ public class OnUpdateTicking(
 {
     public void Main(object? sender, UpdateTickingEventArgs e)
     {
-        var cfg = getConfig();
-
         var config = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>());
         helper.WriteConfig(config);
 
@@ -22,7 +20,7 @@ public class OnUpdateTicking(
         if (!Context.IsMainPlayer)
             return;
 
-        if (e.IsMultipleOf(cfg.UpdateInterval))
+        if (e.IsMultipleOf(config.UpdateInterval))
             configurator.ConfigureAllMachines(config);
     }
 }
