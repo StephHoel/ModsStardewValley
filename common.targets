@@ -2,10 +2,8 @@
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
 
-    <!-- pasta do common.targets + _releases -->
     <ModZipPath>$(MSBuildThisFileDirectory)_releases</ModZipPath>
 
-    <!-- opcional: evita tentar copiar pro Mods do jogo em máquinas sem o jogo instalado (CI/Linux/macOS) -->
     <EnableModDeploy>false</EnableModDeploy>
   </PropertyGroup>
 </Project>
