@@ -15,6 +15,10 @@ public class ModEntry : Mod
 
     private void OnDayStarted(object? sender, EventArgs e)
     {
+        // Avoid running twice in multiplayer.
+        if (!Context.IsMainPlayer)
+            return;
+
         WaterAllLocations();
         WaterPetBowl();
     }
@@ -42,18 +46,20 @@ public class ModEntry : Mod
 
     private void WaterPetBowl()
     {
+        // Pet bowl can be missing (e.g., no pet yet, custom farms, etc.).
         try
         {
-            var farmPetBowl = Game1.getFarm().getBuildingByType("Pet Bowl");
+            var farm = Game1.getFarm();
+            var bowl = farm?.getBuildingByType("Pet Bowl");
 
-            if (farmPetBowl is PetBowl pet)
+            if (bowl is PetBowl pet)
                 pet.watered.Value = true;
             else
-                Monitor.Log("PetBowl do not exist", LogLevel.Debug);
+                Monitor.Log("Pet bowl not found.", LogLevel.Trace);
         }
-        catch
+        catch (Exception ex)
         {
-            Monitor.Log("PetBowl do not exist", LogLevel.Debug);
+            Monitor.Log($"Failed to water pet bowl: {ex}", LogLevel.Trace);
         }
     }
 }

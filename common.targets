@@ -4,6 +4,6 @@
 
     <ModZipPath>$(MSBuildThisFileDirectory)_releases</ModZipPath>
 
-    <EnableModDeploy>false</EnableModDeploy>
+    <EnableModDeploy>true</EnableModDeploy>
   </PropertyGroup>
 </Project>
