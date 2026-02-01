@@ -1,15 +1,16 @@
-﻿using StardewModdingAPI;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 
 namespace StephHoel.AddMoney.Events;
 
-/// <summary>
-/// Handles the GameLaunched event and config menu registration.
-/// </summary>
-public class OnGameLaunched(IModHelper helper, IMod mod, ModConfig config)
+/// <summary>Handles the GameLaunched event and config menu registration.</summary>
+public class OnGameLaunched(
+    IModHelper helper,
+    IManifest manifest,
+    Func<ModConfig> getConfig,
+    Action<ModConfig> setConfig
+)
 {
-    private readonly IManifest _modManifest = mod.ModManifest;
-
     public void Main(object? sender, GameLaunchedEventArgs e)
     {
         var configMenu = helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
@@ -18,28 +19,42 @@ public class OnGameLaunched(IModHelper helper, IMod mod, ModConfig config)
             return;
 
         configMenu.Register(
-            mod: _modManifest,
-            reset: () => config = new ModConfig(),
-            save: () => helper.WriteConfig(config)
+            mod: manifest,
+            reset: () =>
+            {
+                var cfg = ConfigUtils.Normalize(new ModConfig());
+                setConfig(cfg);
+            },
+            save: () => helper.WriteConfig(getConfig())
         );
 
         configMenu.AddSectionTitle(
-            mod: _modManifest,
+            mod: manifest,
             text: I18n.ConfigTitleGeneralOptions
         );
 
         configMenu.AddKeybind(
-            mod: _modManifest,
+            mod: manifest,
             name: I18n.ConfigButtonAddToMoneyKeyName,
-            getValue: () => config.ButtonToAddMoney,
-            setValue: value => config.ButtonToAddMoney = value
+            getValue: () => getConfig().ButtonToAddMoney,
+            setValue: value =>
+            {
+                var cfg = getConfig();
+                cfg.ButtonToAddMoney = value;
+                setConfig(cfg);
+            }
         );
 
         configMenu.AddNumberOption(
-            mod: _modManifest,
+            mod: manifest,
             name: I18n.ConfigGoldAddName,
-            getValue: () => config.GoldToAdd,
-            setValue: val => config.GoldToAdd = val
+            getValue: () => getConfig().GoldToAdd,
+            setValue: value =>
+            {
+                var cfg = getConfig();
+                cfg.GoldToAdd = value;
+                setConfig(ConfigUtils.Normalize(cfg));
+            }
         );
     }
 }

@@ -10,6 +10,20 @@
             "request": "launch",
             "projectPath": "${workspaceFolder}\\ConfigureMachineSpeed\\ConfigureMachineSpeed.csproj",
             "launchConfigurationId": "TargetFramework=;ConfigureMachineSpeed"
+        },
+        {
+            "name": "C#: AddMoney",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}\\AddMoney\\AddMoney.csproj",
+            "launchConfigurationId": "TargetFramework=;AddMoney"
+        },
+        {
+            "name": "C#: AutoWater",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}\\AutoWater\\AutoWater.csproj",
+            "launchConfigurationId": "TargetFramework=;AutoWater"
         }
     ]
 }
