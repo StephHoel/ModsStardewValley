@@ -15,7 +15,7 @@ public class ConfigUtils
 
         cfg.Machines ??= Machines.GetNewMachines();
 
-        if (!cfg.Machines.Any(m => !m.Id.StartsWithIgnoreCase("(BC)")))
+        if (cfg.Machines.All(m => !string.IsNullOrWhiteSpace(m.Id) && m.Id.StartsWithIgnoreCase("(BC)")))
             return cfg;
 
         var migratedEntries = 0;
