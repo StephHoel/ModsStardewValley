@@ -34,7 +34,7 @@ public class ConfigUtils
                 }
                 else
                 {
-                    if (m.Name.StartsWith("(BC)"))
+                    if (m.Name.StartsWithIgnoreCase("(BC)"))
                     {
                         m.Id = m.Name;
                         m.Name = null;
