@@ -39,8 +39,6 @@ public class ModEntry : Mod
                 );
 
         var onUpdateTicking = new OnUpdateTicking(
-                    // helper,
-                    // Monitor,
                     Configurator,
                     getConfig: () => this.Config
                 );
