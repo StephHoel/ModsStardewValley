@@ -22,7 +22,7 @@ public class OnButtonPressed(
         if (e.Button != cfg.ReloadConfigKey)
             return;
 
-        var newCfg = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>());
+        var newCfg = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>(), monitor);
         helper.WriteConfig(newCfg);
 
         setConfig(newCfg);

@@ -1,23 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<Version>1.3.0</Version>
-		<TargetFramework>net6.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<GamePath></GamePath>
-		<LangVersion>Latest</LangVersion>
-		<RootNamespace>StephHoel.ConfigureMachineSpeed</RootNamespace>
-	</PropertyGroup>
+    <PropertyGroup>
+        <Version>1.4.0</Version>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GamePath></GamePath>
+        <LangVersion>Latest</LangVersion>
+        <RootNamespace>StephHoel.ConfigureMachineSpeed</RootNamespace>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.4.0" />
-		<PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" Version="2.2.1" />
-	</ItemGroup>
-	
-	<ItemGroup>
-		<ProjectReference Include="..\Utils\Utils.csproj" />
-	</ItemGroup>
-	
-	<Import Project="..\common.targets" Label="Shared" />
+    <ItemGroup>
+        <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.4.0" />
+        <PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" Version="2.2.1" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\Utils\Utils.csproj" />
+    </ItemGroup>
+    
+    <Import Project="..\common.targets" Label="Shared" />
 </Project>

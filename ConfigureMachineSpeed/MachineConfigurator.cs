@@ -11,9 +11,15 @@ public class MachineConfigurator
 
     public void ConfigureAllMachines(ModConfig config)
     {
-        var cfgByName = config.Machines
+        var cfgById = config.Machines
             .Where(m => !m.IsDefault())
-            .GroupBy(m => m.Name, StringComparer.Ordinal)
+            .Where(m => !string.IsNullOrWhiteSpace(m.Id))
+            .GroupBy(m => m.Id, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+
+        var cfgByLegacyName = config.Machines
+            .Where(m => !m.IsDefault() && !string.IsNullOrWhiteSpace(m.Name))
+            .GroupBy(m => m.Name!, StringComparer.Ordinal)
             .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
 
         foreach (GameLocation location in Locations.GetLocations())
@@ -24,18 +30,22 @@ public class MachineConfigurator
                 if (obj is null)
                     continue;
 
-                if (TryGetConfig(cfgByName, obj, out var cfg))
+                if (TryGetConfig(cfgById, cfgByLegacyName, obj, out var cfg))
                     ConfigureMachine(cfg, obj);
             }
         }
     }
 
-    private bool TryGetConfig(Dictionary<string, MachineConfig> cfgByName, Object obj, out MachineConfig cfg)
+    private bool TryGetConfig(
+        Dictionary<string, MachineConfig> cfgById,
+        Dictionary<string, MachineConfig> cfgByLegacyName,
+        Object obj,
+        out MachineConfig cfg)
     {
-        if (!string.IsNullOrWhiteSpace(obj.QualifiedItemId) && cfgByName.TryGetValue(obj.QualifiedItemId, out cfg!))
+        if (!string.IsNullOrWhiteSpace(obj.QualifiedItemId) && cfgById.TryGetValue(obj.QualifiedItemId, out cfg!))
             return true;
 
-        if (cfgByName.TryGetValue(obj.name, out cfg!))
+        if (cfgByLegacyName.TryGetValue(obj.name, out cfg!))
             return true;
 
         cfg = null!;
