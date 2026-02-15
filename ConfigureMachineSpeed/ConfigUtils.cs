@@ -7,7 +7,7 @@ public class ConfigUtils
 {
     public static ModConfig Normalize(ModConfig cfg, IMonitor? monitor = null)
     {
-        if (cfg.UpdateInterval < 10)
+        if (cfg.UpdateInterval < 1 || cfg.UpdateInterval > 10)
         {
             cfg.UpdateInterval = 10u;
             // monitor?.Log($"[DEV] UpdateInterval adjusted to {cfg.UpdateInterval}.", LogLevel.Debug);
