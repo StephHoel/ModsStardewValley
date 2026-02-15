@@ -14,7 +14,7 @@ public class ModEntry : Mod
         I18n.Init(helper.Translation);
         FileUtils.RemoveObsoleteFiles(helper, Monitor);
 
-        Config = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>());
+        Config = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>(), Monitor);
         helper.WriteConfig(Config);
 
         Configurator = new MachineConfigurator();
@@ -22,26 +22,25 @@ public class ModEntry : Mod
         var onGameLaunched = new OnGameLaunched(
                     ModManifest,
                     helper,
+                    Monitor,
                     setConfig: cfg => this.Config = cfg
                 );
 
         var onSaveLoaded = new OnSaveLoaded(
                     helper,
+                    Monitor,
                     Configurator,
                     setConfig: cfg => this.Config = cfg
                 );
 
         var onDayStarted = new OnDayStarted(
-                    helper,
                     Configurator,
-                    setConfig: cfg => this.Config = cfg
+                    getConfig: () => this.Config
                 );
 
         var onUpdateTicking = new OnUpdateTicking(
-                    helper,
                     Configurator,
-                    getConfig: () => this.Config,
-                    setConfig: cfg => this.Config = cfg
+                    getConfig: () => this.Config
                 );
 
         var onButtonPressed = new OnButtonPressed(

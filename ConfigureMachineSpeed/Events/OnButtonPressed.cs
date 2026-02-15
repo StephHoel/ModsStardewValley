@@ -22,7 +22,7 @@ public class OnButtonPressed(
         if (e.Button != cfg.ReloadConfigKey)
             return;
 
-        var newCfg = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>());
+        var newCfg = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>(), monitor);
         helper.WriteConfig(newCfg);
 
         setConfig(newCfg);
@@ -30,6 +30,6 @@ public class OnButtonPressed(
         configurator.ConfigureAllMachines(newCfg);
 
         Game1.addHUDMessage(new HUDMessage(I18n.Message(), 2));
-        monitor.Log("Config recharge and reapplied.", LogLevel.Info);
+        monitor.Log("Config reloaded and reapplied.", LogLevel.Info);
     }
 }

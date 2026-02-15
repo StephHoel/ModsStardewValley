@@ -6,12 +6,13 @@ namespace StephHoel.ConfigureMachineSpeed.Events;
 public class OnGameLaunched(
     IManifest manifest,
     IModHelper helper,
+    IMonitor monitor,
     Action<ModConfig> setConfig
 )
 {
     public void Main(object? sender, GameLaunchedEventArgs e)
     {
-        var config = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>());
+        var config = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>(), monitor);
         var updatedMachines = Machines.SetMachines(config.Machines);
         var hasMachineChanges = !new HashSet<MachineConfig>(config.Machines, new MachinesComparer()).SetEquals(updatedMachines);
 
@@ -61,7 +62,7 @@ public class OnGameLaunched(
         {
             configMenu.AddSectionTitle(
                 mod: manifest,
-                text: () => Machines.GetTranslation(machine.Name)
+                text: () => Machines.GetTranslation(machine.Id)
             );
 
             configMenu.AddNumberOption(

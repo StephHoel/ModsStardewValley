@@ -5,13 +5,14 @@ namespace StephHoel.ConfigureMachineSpeed.Events;
 
 public class OnSaveLoaded(
     IModHelper helper,
+    IMonitor monitor,
     MachineConfigurator configurator,
     Action<ModConfig> setConfig
 )
 {
     public void Main(object? sender, SaveLoadedEventArgs e)
     {
-        var config = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>());
+        var config = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>(), monitor);
         helper.WriteConfig(config);
 
         setConfig(config);
