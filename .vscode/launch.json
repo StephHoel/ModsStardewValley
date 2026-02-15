@@ -24,6 +24,13 @@
             "request": "launch",
             "projectPath": "${workspaceFolder}\\AutoWater\\AutoWater.csproj",
             "launchConfigurationId": "TargetFramework=;AutoWater"
+        },
+        {
+            "name": "TranslationSummary",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}\\TranslationSummary\\TranslationSummary.csproj",
+            "launchConfigurationId": "TargetFramework=;TranslationSummary"
         }
     ]
 }
