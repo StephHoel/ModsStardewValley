@@ -45,7 +45,7 @@ public class OnGameLaunched(
             name: I18n.ConfigUpdateIntervalName,
             getValue: () => config.UpdateInterval,
             setValue: val => config.UpdateInterval = (uint)val,
-            min: 1,
+            min: 10,
             max: 10
         );
 
