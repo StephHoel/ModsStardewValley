@@ -24,6 +24,9 @@ public class MachineConfigurator
 
         foreach (GameLocation location in Locations.GetLocations())
         {
+            if (location.objects is null)
+                continue;
+
             foreach (var pair in location.objects.Pairs)
             {
                 var obj = pair.Value;
