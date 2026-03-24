@@ -4,7 +4,7 @@ using StardewValley.GameData.Machines;
 
 namespace StephHoel.ConfigureMachineSpeed;
 
-public class Machines
+public static class Machines
 {
     private static Dictionary<string, string>? CachedLegacyNameToId;
     private static List<string>? CachedMachineIds;
@@ -15,6 +15,7 @@ public class Machines
             return machineId;
 
         var itemData = ItemRegistry.GetData(machineId);
+
         if (!string.IsNullOrWhiteSpace(itemData?.DisplayName))
             return itemData.DisplayName;
 
@@ -24,13 +25,22 @@ public class Machines
         return machineId;
     }
 
+    public static MachineConfig[] OrderByMachineName(this MachineConfig[] machines)
+    {
+        foreach (var machine in machines)
+            machine.Name = GetTranslation(machine.Id);
+
+        return machines.OrderBy(m => m.Name).ToArray();
+    }
+
     public static List<string> MachineIds
         => GetMachineIds();
 
     public static MachineConfig[] GetNewMachines(IEnumerable<string>? machineIds = null)
     {
         var source = machineIds?.Distinct(StringComparer.Ordinal).ToList() ?? MachineIds;
-        return [.. source.Select(id => new MachineConfig(id))];
+
+        return source.Select(id => new MachineConfig(id)).ToArray();
     }
 
     public static MachineConfig[] SetMachines(IEnumerable<MachineConfig?> machines, IEnumerable<string>? machineIds = null)
@@ -40,12 +50,12 @@ public class Machines
         foreach (var machine in GetNewMachines(machineIds))
             machinesSet.Add(machine);
 
-        return [.. machinesSet];
+        return machinesSet.ToArray();
     }
 
-    public static bool TryResolveLegacyNameToId(string legacyName, out string machineId)
+    public static bool TryResolveLegacyNameToId(string legacyName, out string? machineId)
     {
-        machineId = string.Empty;
+        machineId = null;
 
         if (string.IsNullOrWhiteSpace(legacyName) || !Context.IsGameLaunched)
             return false;
@@ -65,7 +75,7 @@ public class Machines
         foreach (var machineId in machineData.Keys)
             machineIds.Add(machineId);
 
-        CachedMachineIds = [.. machineIds.OrderBy(id => id, StringComparer.OrdinalIgnoreCase)];
+        CachedMachineIds = machineIds.OrderBy(id => id, StringComparer.OrdinalIgnoreCase).ToList();
 
         return CachedMachineIds;
     }
@@ -87,17 +97,23 @@ public class Machines
 
         return map;
     }
+
+    public static string? GetIdByMachineName(string machineName)
+    {
+        var map = BuildLegacyNameToIdMap();
+
+        if (map.TryGetValue(machineName, out var id))
+            return id;
+
+        return null;
+    }
 }
 
 public class MachinesComparer : IEqualityComparer<MachineConfig>
 {
-    public bool Equals(MachineConfig x, MachineConfig y)
-    {
-        return x.Id == y.Id;
-    }
+    public bool Equals(MachineConfig? x, MachineConfig? y)
+        => x?.Id == y?.Id && x?.Name == y?.Name;
 
     public int GetHashCode(MachineConfig obj)
-    {
-        return obj.Id?.GetHashCode() ?? default;
-    }
+        => obj.Id?.GetHashCode() ?? default;
 }

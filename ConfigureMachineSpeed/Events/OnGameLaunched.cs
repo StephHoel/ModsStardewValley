@@ -6,26 +6,33 @@ namespace StephHoel.ConfigureMachineSpeed.Events;
 public class OnGameLaunched(
     IManifest manifest,
     IModHelper helper,
-    IMonitor monitor,
-    Action<ModConfig> setConfig
+    IMonitor monitor
 )
 {
     public void Main(object? sender, GameLaunchedEventArgs e)
     {
-        var config = ConfigUtils.Normalize(helper.ReadConfig<ModConfig>(), monitor);
-        var updatedMachines = Machines.SetMachines(config.Machines);
-        var hasMachineChanges = !new HashSet<MachineConfig>(config.Machines, new MachinesComparer()).SetEquals(updatedMachines);
+        // monitor.Log("[OnGameLaunched] Starting configuration flow", LogLevel.Trace);
 
-        if (hasMachineChanges)
-            config.Machines = updatedMachines;
+        var config = helper.ReadConfig<ModConfig>()
+                           .NormalizeMachineConfig(monitor);
 
         helper.WriteConfig(config);
+        // monitor?.Log("[ConfigUtils] Config written to disk", LogLevel.Trace);
 
-        setConfig(config);
+        ConfigGenericModConfigMenu(config);
+    }
 
+    private void ConfigGenericModConfigMenu(ModConfig config)
+    {
         // get Generic Mod Config Menu's API (if it's installed)
         var configMenu = helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-        if (configMenu is null) return;
+        if (configMenu is null)
+        {
+            // monitor.Log("[OnGameLaunched] GenericModConfigMenu not found", LogLevel.Trace);
+            return;
+        }
+
+        // monitor.Log("[OnGameLaunched] Registering options with GenericModConfigMenu", LogLevel.Trace);
 
         // register mod
         configMenu.Register(
@@ -39,30 +46,12 @@ public class OnGameLaunched(
             text: I18n.ConfigTitleGeneralOptions
         );
 
-        // UpdateInterval
-        configMenu.AddNumberOption(
-            mod: manifest,
-            name: I18n.ConfigUpdateIntervalName,
-            getValue: () => config.UpdateInterval,
-            setValue: val => config.UpdateInterval = (uint)val,
-            min: 1,
-            max: 10
-        );
-
-        // ReloadConfigKey
-        configMenu.AddKeybind(
-            mod: manifest,
-            name: I18n.ConfigReloadConfigKeyName,
-            getValue: () => config.ReloadConfigKey,
-            setValue: value => config.ReloadConfigKey = value
-        );
-
         // Machines
-        foreach (var machine in config.Machines)
+        foreach (var machine in config.Machines.OrderByMachineName())
         {
             configMenu.AddSectionTitle(
                 mod: manifest,
-                text: () => Machines.GetTranslation(machine.Id)
+                text: () => machine.Name ?? Machines.GetTranslation(machine.Id)
             );
 
             configMenu.AddNumberOption(

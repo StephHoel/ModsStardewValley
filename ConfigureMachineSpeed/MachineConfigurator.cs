@@ -1,16 +1,21 @@
+using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Objects;
 using Utils;
 using Object = StardewValley.Object;
 
 namespace StephHoel.ConfigureMachineSpeed;
 
-public class MachineConfigurator
+public static class MachineConfigurator
 {
     private const string AppliedKey = "StephHoel.ConfigureMachineSpeed.applied";
     private const string OriginalKey = "StephHoel.ConfigureMachineSpeed.original";
+    private const string StopAgingKey = "StephHoel.ConfigureMachineSpeed.stopAging";
 
-    public void ConfigureAllMachines(ModConfig config)
+    public static void ConfigureAllMachines(this ModConfig config, IMonitor monitor)
     {
+        monitor.Log("[ConfigureAllMachines] Starting configuration machines", LogLevel.Trace);
+
         var cfgById = config.Machines
             .Where(m => !m.IsDefault())
             .Where(m => !string.IsNullOrWhiteSpace(m.Id))
@@ -29,8 +34,7 @@ public class MachineConfigurator
 
             foreach (var pair in location.objects.Pairs)
             {
-                var obj = pair.Value;
-                if (obj is null)
+                if (pair.Value is not Object obj)
                     continue;
 
                 if (TryGetConfig(cfgById, cfgByLegacyName, obj, out var cfg))
@@ -39,7 +43,7 @@ public class MachineConfigurator
         }
     }
 
-    private bool TryGetConfig(
+    private static bool TryGetConfig(
         Dictionary<string, MachineConfig> cfgById,
         Dictionary<string, MachineConfig> cfgByLegacyName,
         Object obj,
@@ -55,7 +59,7 @@ public class MachineConfigurator
         return false;
     }
 
-    private void ConfigureMachine(MachineConfig cfg, Object obj)
+    private static void ConfigureMachine(MachineConfig cfg, Object obj)
     {
         if (cfg.UsePercent && cfg.Time == 100)
             return;
@@ -67,15 +71,20 @@ public class MachineConfigurator
             return;
         }
 
+        // monitor.Log($"[ConfigureMachine] Found object {obj.Name} (QualifiedItemId={obj.QualifiedItemId}) MinutesUntilReady={obj.MinutesUntilReady}", LogLevel.Trace);
+
         int original = obj.MinutesUntilReady;
+
         if (obj.modData.TryGetValue(OriginalKey, out string storedOriginal) &&
             int.TryParse(storedOriginal, out int parsedOriginal) &&
             parsedOriginal > 0)
             original = parsedOriginal;
 
-        int target = cfg.UsePercent
-            ? Math.Max(1, (int)Math.Ceiling(original * (cfg.Time / 100.0)))
-            : Math.Max(1, cfg.Time);
+        // monitor.Log($"[ConfigureMachine] original (from modData? {obj.modData.ContainsKey(OriginalKey)}) = {original}", LogLevel.Debug);
+
+        int target = CalculateTarget(cfg, original);
+
+        // monitor.Log($"[ConfigureMachine] calculated target (UsePercent={cfg.UsePercent}, Time={cfg.Time}) = {target}", LogLevel.Debug);
 
         if (obj.modData.TryGetValue(AppliedKey, out string applied))
         {
@@ -92,6 +101,88 @@ public class MachineConfigurator
 
         obj.modData[OriginalKey] = original.ToString();
         obj.modData[AppliedKey] = target.ToString();
+
+        // if (!obj.BaseName.ContainsIgnoreCase("Cask"))
         obj.MinutesUntilReady = target;
+
+        // if (obj.BaseName.ContainsIgnoreCase("Cask") && obj is Cask cask)
+        //     cask.ConfigureCask(target);
+    }
+
+    private static void ConfigureCask(this Cask cask, int target)
+    {
+        // monitor.Log($"[ConfigureMachine] [{obj.DisplayName}] original={original}, applied={target}", LogLevel.Debug);
+
+        if (cask.heldObject.Value == null)
+        {
+            cask.modData.Remove(StopAgingKey);
+
+            cask.readyForHarvest.Value = false;
+            cask.MinutesUntilReady = 0;
+
+            return;
+        }
+
+        if (cask?.heldObject.Value is not Object held)
+            return;
+
+        if (held.modData.ContainsKey(StopAgingKey))
+            return;
+
+        held.MinutesUntilReady = target;
+
+        int oldQuality = held.Quality;
+
+        var days = GetDaysForNextQuality(oldQuality, cask.agingRate.Value);
+
+        for (var i = 0; i < days; i++)
+            cask.DayUpdate();
+
+        var newQuality = held.Quality;
+
+        // monitor.Log($"[ConfigureMachine] OldQuality={oldQuality} NewQuality={newQuality}", LogLevel.Debug);
+
+        if (newQuality > oldQuality)
+        {
+            cask.modData[StopAgingKey] = "true";
+            cask.MinutesUntilReady = target;
+            held.MinutesUntilReady = target;
+            cask.readyForHarvest.Value = true;
+        }
+    }
+
+    private static int CalculateTarget(MachineConfig cfg, int original)
+    {
+        if (cfg is null)
+            return original;
+
+        if (cfg.UsePercent)
+        {
+            int percent = cfg.Time;
+            int calculated = (int)Math.Ceiling(original * (percent / 100.0));
+            calculated = Math.Max(1, calculated);
+            calculated = Math.Min(100, calculated);
+            return calculated;
+        }
+
+        return ConfigUtils.RoundedTime(cfg.Time);
+    }
+
+    private static int GetDaysForNextQuality(int quality, float agingRate)
+    {
+        return quality switch
+        {
+            // normal → silver
+            0 => (int)agingRate,
+
+            // silver → gold
+            1 => (int)agingRate,
+
+            // gold → iridium
+            2 => (int)(agingRate * 2),
+
+            // já é iridium
+            _ => 0,
+        };
     }
 }
