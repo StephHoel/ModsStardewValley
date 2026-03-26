@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using System.Globalization;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Machines;
 
@@ -9,12 +10,14 @@ public static class Machines
     private static Dictionary<string, string>? CachedLegacyNameToId;
     private static List<string>? CachedMachineIds;
 
-    public static string GetTranslation(string machineId)
+    public static string GetTranslation(string machineId, IMonitor? monitor = null)
     {
         if (!Context.IsGameLaunched)
             return machineId;
 
         var itemData = ItemRegistry.GetData(machineId);
+
+        // monitor?.Log($"[GetTranslation] MachineId={machineId} DisplayName={itemData?.DisplayName} InternalName={itemData?.InternalName}", LogLevel.Debug);
 
         if (!string.IsNullOrWhiteSpace(itemData?.DisplayName))
             return itemData.DisplayName;
@@ -25,12 +28,14 @@ public static class Machines
         return machineId;
     }
 
-    public static MachineConfig[] OrderByMachineName(this MachineConfig[] machines)
+    public static MachineConfig[] OrderByMachineName(this MachineConfig[] machines, IMonitor monitor)
     {
         foreach (var machine in machines)
-            machine.Name = GetTranslation(machine.Id);
+            machine.Name = GetTranslation(machine.Id, monitor);
 
-        return machines.OrderBy(m => m.Name).ToArray();
+        return machines
+            .OrderBy(m => GetTranslation(m.Id, monitor), StringComparer.CurrentCultureIgnoreCase)
+            .ToArray();
     }
 
     public static List<string> MachineIds
