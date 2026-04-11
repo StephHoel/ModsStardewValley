@@ -17,13 +17,13 @@ public static class MachineConfigurator
         monitor.Log("[ConfigureAllMachines] Starting configuration machines", LogLevel.Trace);
 
         var cfgById = config.Machines
-            .Where(m => !m.IsDefault())
+            // .Where(m => !m.IsDefault())
             .Where(m => !string.IsNullOrWhiteSpace(m.Id))
             .GroupBy(m => m.Id, StringComparer.Ordinal)
             .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
 
         var cfgByLegacyName = config.Machines
-            .Where(m => !m.IsDefault() && !string.IsNullOrWhiteSpace(m.Name))
+            .Where(m => /*!m.IsDefault() &&*/ !string.IsNullOrWhiteSpace(m.Name))
             .GroupBy(m => m.Name!, StringComparer.Ordinal)
             .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
 
@@ -61,8 +61,8 @@ public static class MachineConfigurator
 
     private static void ConfigureMachine(MachineConfig cfg, Object obj)
     {
-        if (cfg.UsePercent && cfg.Time == 100)
-            return;
+        // if (cfg.UsePercent && cfg.Time == 100)
+        //     return;
 
         if (obj.MinutesUntilReady <= 0)
         {
@@ -156,20 +156,20 @@ public static class MachineConfigurator
         if (cfg is null)
             return original;
 
-        if (cfg.UsePercent)
-        {
-            int percent = cfg.Time;
-            int calculated = (int)Math.Ceiling(original * (percent / 100.0));
-            calculated = Math.Max(1, calculated);
-            calculated = Math.Min(100, calculated);
-            return calculated;
-        }
+        // if (cfg.UsePercent)
+        // {
+        //     int percent = cfg.Time;
+        //     int calculated = (int)Math.Ceiling(original * (percent / 100.0));
+        //     calculated = Math.Max(1, calculated);
+        //     calculated = Math.Min(100, calculated);
+        //     cfg.Time = calculated;
+        // }
 
         return ConfigUtils.RoundedTime(cfg.Time);
     }
 
     private static int GetDaysForNextQuality(int quality, float agingRate)
-    {
+    { // TODO ajustar baseado no tempo total
         return quality switch
         {
             // normal → silver
@@ -183,6 +183,22 @@ public static class MachineConfigurator
 
             // já é iridium
             _ => 0,
+        };
+    }
+
+    private static int CalculaAvancoEmDias(int tempoTotal, int qualidade)
+    {
+        return (int)(tempoTotal * PorcentagemPorQualidade(qualidade));
+    }
+
+    private static double PorcentagemPorQualidade(int qualidade)
+    {
+        return qualidade switch
+        {
+            0 => 0.25, // normal
+            1 => 0.50, // silver
+            2 => 0.75, // gold
+            _ => 1.00, // iridium
         };
     }
 }

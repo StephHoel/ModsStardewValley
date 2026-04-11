@@ -28,7 +28,7 @@ public class GenericModConfigMenu
         configMenu.Register(
             mod: manifest,
             reset: () => config = new ModConfig(),
-            save: () => helper.WriteConfig(config)
+            save: () => SaveMod(helper, config)
         );
 
         configMenu.AddSectionTitle(
@@ -49,16 +49,24 @@ public class GenericModConfigMenu
                 name: I18n.ConfigTimeName,
                 getValue: () => machine.Time,
                 setValue: val => machine.Time = val,
-                min: 1,
-                max: 100
+                min: 10,
+                interval: 10,
+                max: 200
             );
 
-            configMenu.AddBoolOption(
-                mod: manifest,
-                name: I18n.ConfigPercentName,
-                getValue: () => machine.UsePercent,
-                setValue: val => machine.UsePercent = val
-            );
+            // configMenu.AddBoolOption(
+            //     mod: manifest,
+            //     name: I18n.ConfigPercentName,
+            //     getValue: () => machine.UsePercent,
+            //     setValue: val => machine.UsePercent = val
+            // );
         }
+    }
+
+    private static void SaveMod(IModHelper helper, ModConfig config)
+    {
+        config.NormalizeMachineConfig();
+
+        helper.WriteConfig(config);
     }
 }
