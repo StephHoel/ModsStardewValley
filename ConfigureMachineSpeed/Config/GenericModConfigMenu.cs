@@ -37,7 +37,7 @@ public class GenericModConfigMenu
         );
 
         // Machines
-        foreach (var machine in config.Machines.OrderByMachineName(monitor))
+        foreach (var machine in config.Machines.OrderByMachineName(monitor).Where(m => !m.Id.IsMachineExcluded()).ToList())
         {
             configMenu.AddSectionTitle(
                 mod: manifest,
@@ -50,7 +50,6 @@ public class GenericModConfigMenu
                 getValue: () => machine.Time,
                 setValue: val => machine.Time = val,
                 min: 10,
-                interval: 10,
                 max: 200
             );
 

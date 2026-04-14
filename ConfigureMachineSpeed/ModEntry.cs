@@ -1,28 +1,40 @@
-﻿using StardewModdingAPI;
-using StardewValley;
+﻿using HarmonyLib;
+using StardewModdingAPI;
 using StephHoel.ConfigureMachineSpeed.Config;
-using StephHoel.ConfigureMachineSpeed.Events;
 using Utils;
 
 namespace StephHoel.ConfigureMachineSpeed;
 
 public class ModEntry : Mod
 {
+    internal static ModEntry Instance;
+
     public override void Entry(IModHelper helper)
     {
         I18n.Init(helper.Translation);
         FileUtils.RemoveObsoleteFiles(helper, Monitor);
 
+        Instance = this;
+
         helper.ReadConfig<ModConfig>(); // read or create
 
-        var onGameLaunched = new OnGameLaunched(helper, Monitor);
-        var onTimeChanged = new OnTimeChanged(helper, Monitor);
-        var onRenderedActiveMenu = new OnRenderedActiveMenu(ModManifest, helper, Monitor);
-        var onLocaleChanged = new OnLocaleChanged(ModManifest, helper, Monitor);
+        var harmony = new Harmony(this.ModManifest.UniqueID);
+        harmony.PatchAll();
 
-        helper.Events.Display.RenderedActiveMenu += onRenderedActiveMenu.Main;
-        helper.Events.Content.LocaleChanged += onLocaleChanged.Main;
-        helper.Events.GameLoop.GameLaunched += onGameLaunched.Main;
-        helper.Events.GameLoop.TimeChanged += onTimeChanged.Main;
+        helper.Events.Display.RenderedActiveMenu += (_, _)
+            => GenericModConfigMenu.Register(ModManifest, helper, Monitor);
+
+        helper.Events.Content.LocaleChanged += (_, _)
+            => GenericModConfigMenu.Register(ModManifest, helper, Monitor);
+
+        helper.Events.GameLoop.GameLaunched += (_, _) =>
+        {
+            var config = helper.ReadConfig<ModConfig>();
+            config.NormalizeMachineConfig(Monitor);
+            helper.WriteConfig(config);
+        };
+
+        helper.Events.GameLoop.TimeChanged += (_, _)
+            => helper.ReadConfig<ModConfig>().ConfigureAllMachines(Monitor);
     }
 }

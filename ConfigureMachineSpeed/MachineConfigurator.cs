@@ -1,6 +1,7 @@
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
+using StephHoel.ConfigureMachineSpeed.Config;
 using Utils;
 using Object = StardewValley.Object;
 
@@ -14,6 +15,8 @@ public static class MachineConfigurator
 
     public static void ConfigureAllMachines(this ModConfig config, IMonitor monitor)
     {
+        if (!Context.IsMainPlayer) return;
+
         monitor.Log("[ConfigureAllMachines] Starting configuration machines", LogLevel.Trace);
 
         var cfgById = config.Machines
@@ -59,6 +62,27 @@ public static class MachineConfigurator
         return false;
     }
 
+    public static void ConfigureOneMachine(this Object obj, ModConfig config)
+    {
+        if (!Context.IsMainPlayer) return;
+
+        var cfgById = config.Machines
+            // .Where(m => !m.IsDefault())
+            .Where(m => !string.IsNullOrWhiteSpace(m.Id))
+            .GroupBy(m => m.Id, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+
+        var cfgByLegacyName = config.Machines
+            .Where(m => /*!m.IsDefault() &&*/ !string.IsNullOrWhiteSpace(m.Name))
+            .GroupBy(m => m.Name!, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+
+        if (TryGetConfig(cfgById, cfgByLegacyName, obj, out var cfg))
+        {
+            ConfigureMachine(cfg, obj);
+        }
+    }
+
     private static void ConfigureMachine(MachineConfig cfg, Object obj)
     {
         // if (cfg.UsePercent && cfg.Time == 100)
@@ -86,24 +110,29 @@ public static class MachineConfigurator
 
         // monitor.Log($"[ConfigureMachine] calculated target (UsePercent={cfg.UsePercent}, Time={cfg.Time}) = {target}", LogLevel.Debug);
 
+        if (obj.MinutesUntilReady <= target) return;
+
         if (obj.modData.TryGetValue(AppliedKey, out string applied))
         {
             if (int.TryParse(applied, out int appliedValue))
             {
-                if (appliedValue == target && obj.MinutesUntilReady == target)
-                    return;
+                if (appliedValue == target) return;
             }
-            else if (applied == "1" && obj.MinutesUntilReady == target)
-            {
-                return;
-            }
+            else if (applied == "1") return;
         }
 
         obj.modData[OriginalKey] = original.ToString();
         obj.modData[AppliedKey] = target.ToString();
 
-        // if (!obj.BaseName.ContainsIgnoreCase("Cask"))
+        // if (!obj.BaseName.Contains("Cask", StringComparison.InvariantCultureIgnoreCase))
+        if (obj.ItemId.IsMachineExcluded()) return;
+
         obj.MinutesUntilReady = target;
+
+        // if (obj.BaseName.IsIncubatorMachine()) // TODO pensar nessa lógica à parte
+        // {
+        //     obj.DayUpdate();
+        // }
 
         // if (obj.BaseName.ContainsIgnoreCase("Cask") && obj is Cask cask)
         //     cask.ConfigureCask(target);
