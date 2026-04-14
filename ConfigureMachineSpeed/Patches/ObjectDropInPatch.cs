@@ -1,5 +1,4 @@
 using HarmonyLib;
-using StardewModdingAPI;
 using StardewValley;
 
 namespace StephHoel.ConfigureMachineSpeed.Patches;
@@ -15,9 +14,7 @@ public static class ObjectDropInPatch
             || __instance.heldObject.Value == null
             || __instance.Location == null
             || (Game1.player?.currentLocation) == null)
-        {
             return;
-        }
 
         // if (__instance.Location == Game1.player.currentLocation)
         // {
