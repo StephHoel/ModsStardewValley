@@ -1,0 +1,26 @@
+name: Upload Mod to NexusMods
+
+on:
+  push:
+    branches: [niam]
+
+jobs:
+  upload-to-nexusmods:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Zip mod files # Talvez não precise para meus mods
+        run: zip -r mod.zip src/
+
+      - name: Upload mod to NexusMods
+        id: upload
+        uses: Nexus-Mods/upload-action@main
+        with:
+          api_key: ${{ secrets.NEXUSMODS_API_KEY }}
+          file_group_id: ${{ vars.NEXUSMODS_FILE_GROUP_ID }}
+          filename: mod.zip
+          display_name: "My Amazing Mod"
+          description: "Test description"
+          version: ${{ github.event.release.tag_name || github.event.inputs.version }}

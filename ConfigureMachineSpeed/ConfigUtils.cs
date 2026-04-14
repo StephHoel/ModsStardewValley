@@ -1,60 +1,103 @@
 using StardewModdingAPI;
 using StardewValley.Extensions;
+using StardewValley.Objects;
 
 namespace StephHoel.ConfigureMachineSpeed;
 
-public class ConfigUtils
+public static class ConfigUtils
 {
-    public static ModConfig Normalize(ModConfig cfg, IMonitor? monitor = null)
+    public static ModConfig NormalizeMachineConfig(this ModConfig cfg, IMonitor? monitor = null)
     {
-        if (cfg.UpdateInterval < 1 || cfg.UpdateInterval > 10)
-        {
-            cfg.UpdateInterval = 10u;
-            // monitor?.Log($"[DEV] UpdateInterval adjusted to {cfg.UpdateInterval}.", LogLevel.Debug);
-        }
+
+        monitor?.Log($"[ConfigUtils] Starting normalize config", LogLevel.Trace);
 
         cfg.Machines ??= Machines.GetNewMachines();
 
-        if (cfg.Machines.All(m => !string.IsNullOrWhiteSpace(m.Id) && m.Id.StartsWithIgnoreCase("(BC)")))
+        if (cfg.Machines.All(m => string.IsNullOrWhiteSpace(m.Name)))
             return cfg;
 
-        var migratedEntries = 0;
+        var machinesList = new List<MachineConfig>();
 
         foreach (var m in cfg.Machines)
         {
-            // monitor?.Log($"[DEV] Machine name is '{m.Name}' and Machine Id is '{m.Id}'.", LogLevel.Debug);
+            var machine = TryResolveId(m, monitor);
 
-            if (string.IsNullOrWhiteSpace(m.Id) && !string.IsNullOrWhiteSpace(m.Name))
+            machine = NormalizeTime(machine);
+
+            if (machinesList.Any(m => m.Id == machine.Id && m.Time == machine.Time /*&& m.UsePercent == machine.UsePercent*/))
+                continue;
+
+            if (machine.Id != Machines.GetIdByMachineName(nameof(Cask)))
+                machinesList.Add(machine);
+        }
+
+        cfg.Machines = machinesList.ToArray();
+
+        return cfg;
+    }
+
+    private static MachineConfig NormalizeTime(MachineConfig machine)
+    {
+        // if (machine.UsePercent)
+        // {
+        //     if (machine.Time < 1)
+        //         machine.Time = 1;
+
+        //     if (machine.Time > 100)
+        //         machine.Time = 100;
+        // }
+
+        // if (!machine.UsePercent)
+        // {
+        if (machine.Time < 10)
+            machine.Time = 10;
+
+        machine.Time = RoundedTime(machine.Time);
+        // }
+
+        return machine;
+    }
+
+    public static int RoundedTime(int value)
+    {
+        int remainder = Math.Abs(value) % 10;
+        int rounded = value - (value >= 0 ? remainder : -remainder);
+
+        if (remainder >= 5)
+            rounded += (value >= 0) ? 10 : -10;
+
+        if (rounded < 10)
+            rounded = 10;
+
+        return rounded;
+    }
+
+    private static MachineConfig TryResolveId(MachineConfig m, IMonitor? monitor = null)
+    {
+        if (string.IsNullOrWhiteSpace(m.Id) && !string.IsNullOrWhiteSpace(m.Name))
+        {
+            if (Machines.TryResolveLegacyNameToId(m.Name, out var machineId))
             {
-                if (Machines.TryResolveLegacyNameToId(m.Name, out var machineId))
+                m.Id = machineId ?? string.Empty;
+                m.Name = null;
+
+                monitor?.Log($"[ConfigUtils.Normalize] Migrated machine config '{m.Name}' to id '{m.Id}'.", LogLevel.Trace);
+            }
+            else
+            {
+                if (m.Name.StartsWithIgnoreCase("(BC)"))
                 {
-                    m.Id = machineId;
-                    migratedEntries++;
-                    // monitor?.Log($"[DEV] Migrated machine config '{m.Name}' to id '{m.Id}'.", LogLevel.Debug);
+                    m.Id = m.Name;
+                    m.Name = null;
                 }
                 else
-                {
-                    if (m.Name.StartsWithIgnoreCase("(BC)"))
-                    {
-                        m.Id = m.Name;
-                        m.Name = null;
-                        migratedEntries++;
-                    }
-                    // else
-                    //     monitor?.Log($"[DEV] Could not resolve legacy machine name '{m.Name}'. Keeping empty id.", LogLevel.Warn);
-                }
-            }
+                    monitor?.Log($"[ConfigUtils] Could not resolve legacy machine name '{m.Name}'. Keeping empty id.", LogLevel.Trace);
 
-            if (!m.UsePercent && m.Time <= 10)
-            {
-                m.Time = 10;
-                // monitor?.Log($"[DEV] Fixed machine '{m.Id}' with invalid absolute time. Set to 10.", LogLevel.Debug);
+                if (m.Id.StartsWithIgnoreCase("(BC)"))
+                    m.Name = null;
             }
         }
 
-
-        // monitor?.Log($"[DEV] Migration {(migratedEntries > 0 ? "" : "in")}complete. Updated {migratedEntries} machine entries from Name to Id.", LogLevel.Info);
-
-        return cfg;
+        return m;
     }
 }
