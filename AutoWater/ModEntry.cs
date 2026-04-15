@@ -3,6 +3,8 @@ using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
+using StephHoel.AutoWater.Config;
+using Utils;
 
 namespace StephHoel.AutoWater;
 
@@ -10,17 +12,24 @@ public class ModEntry : Mod
 {
     public override void Entry(IModHelper helper)
     {
-        helper.Events.GameLoop.DayStarted += OnDayStarted;
-    }
+        I18n.Init(helper.Translation);
+        FileUtils.RemoveObsoleteFiles(helper, Monitor);
 
-    private void OnDayStarted(object? sender, EventArgs e)
-    {
-        // Avoid running twice in multiplayer.
-        if (!Context.IsMainPlayer)
-            return;
+        helper.Events.GameLoop.GameLaunched += (_, _) =>
+        {
+            GMCM.Register(helper, ModManifest);
+        };
 
-        WaterAllLocations();
-        WaterPetBowl();
+        helper.Events.GameLoop.DayStarted += (_, _) =>
+        {
+            // Avoid running twice in multiplayer.
+            if (!Context.IsMainPlayer) return;
+
+            if (!helper.ReadConfig<ModConfig>().IsActive) return;
+
+            WaterAllLocations();
+            WaterPetBowl();
+        };
     }
 
     private static void WaterAllLocations()
