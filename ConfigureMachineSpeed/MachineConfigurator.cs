@@ -116,9 +116,13 @@ public static class MachineConfigurator
         {
             if (int.TryParse(applied, out int appliedValue))
             {
-                if (appliedValue == target) return;
+                if (appliedValue == target && obj.MinutesUntilReady == target)
+                    return;
             }
-            else if (applied == "1") return;
+            else if (applied == "1" && obj.MinutesUntilReady == target)
+            {
+                return;
+            }
         }
 
         obj.modData[OriginalKey] = original.ToString();
