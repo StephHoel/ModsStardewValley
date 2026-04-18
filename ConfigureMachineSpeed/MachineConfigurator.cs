@@ -85,9 +85,6 @@ public static class MachineConfigurator
 
     private static void ConfigureMachine(MachineConfig cfg, Object obj)
     {
-        // if (cfg.UsePercent && cfg.Time == 100)
-        //     return;
-
         if (obj.MinutesUntilReady <= 0)
         {
             obj.modData.Remove(OriginalKey);
@@ -107,8 +104,6 @@ public static class MachineConfigurator
         // monitor.Log($"[ConfigureMachine] original (from modData? {obj.modData.ContainsKey(OriginalKey)}) = {original}", LogLevel.Debug);
 
         int target = CalculateTarget(cfg, original);
-
-        // monitor.Log($"[ConfigureMachine] calculated target (UsePercent={cfg.UsePercent}, Time={cfg.Time}) = {target}", LogLevel.Debug);
 
         if (obj.MinutesUntilReady <= target) return;
 
@@ -188,15 +183,6 @@ public static class MachineConfigurator
     {
         if (cfg is null)
             return original;
-
-        // if (cfg.UsePercent)
-        // {
-        //     int percent = cfg.Time;
-        //     int calculated = (int)Math.Ceiling(original * (percent / 100.0));
-        //     calculated = Math.Max(1, calculated);
-        //     calculated = Math.Min(100, calculated);
-        //     cfg.Time = calculated;
-        // }
 
         return ConfigUtils.RoundedTime(cfg.Time);
     }

@@ -52,13 +52,6 @@ public class GenericModConfigMenu
                 min: 10,
                 max: 200
             );
-
-            // configMenu.AddBoolOption(
-            //     mod: manifest,
-            //     name: I18n.ConfigPercentName,
-            //     getValue: () => machine.UsePercent,
-            //     setValue: val => machine.UsePercent = val
-            // );
         }
     }
 

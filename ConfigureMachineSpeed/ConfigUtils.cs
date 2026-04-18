@@ -24,7 +24,7 @@ public static class ConfigUtils
 
             machine = NormalizeTime(machine);
 
-            if (machinesList.Any(m => m.Id == machine.Id && m.Time == machine.Time /*&& m.UsePercent == machine.UsePercent*/))
+            if (machinesList.Any(m => m.Id == machine.Id && m.Time == machine.Time))
                 continue;
 
             if (machine.Id != Machines.GetIdByMachineName(nameof(Cask)))
@@ -38,22 +38,10 @@ public static class ConfigUtils
 
     private static MachineConfig NormalizeTime(MachineConfig machine)
     {
-        // if (machine.UsePercent)
-        // {
-        //     if (machine.Time < 1)
-        //         machine.Time = 1;
-
-        //     if (machine.Time > 100)
-        //         machine.Time = 100;
-        // }
-
-        // if (!machine.UsePercent)
-        // {
         if (machine.Time < 10)
             machine.Time = 10;
 
         machine.Time = RoundedTime(machine.Time);
-        // }
 
         return machine;
     }
