@@ -55,6 +55,14 @@ public static class ConfigUtils
         return rounded;
     }
 
+    public static int CalculateTarget(this MachineConfig cfg, int original)
+    {
+        if (cfg is null)
+            return original;
+
+        return RoundedTime(cfg.Time);
+    }
+
     private static MachineConfig TryResolveId(MachineConfig m, IMonitor? monitor = null)
     {
         if (string.IsNullOrWhiteSpace(m.Id) && !string.IsNullOrWhiteSpace(m.Name))

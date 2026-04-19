@@ -8,26 +8,14 @@ namespace StephHoel.ConfigureMachineSpeed;
 
 public static class MachineConfigurator
 {
-    private const string AppliedKey = "StephHoel.ConfigureMachineSpeed.applied";
-    private const string OriginalKey = "StephHoel.ConfigureMachineSpeed.original";
-    private const string StopAgingKey = "StephHoel.ConfigureMachineSpeed.stopAging";
-
+    #region Public Methods
     public static void ConfigureAllMachines(this ModConfig config, IMonitor monitor)
     {
         if (!Context.IsMainPlayer) return;
 
         monitor.Log("[ConfigureAllMachines] Starting configuration machines", LogLevel.Trace);
 
-        var cfgById = config.Machines
-            // .Where(m => !m.IsDefault())
-            .Where(m => !string.IsNullOrWhiteSpace(m.Id))
-            .GroupBy(m => m.Id, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
-
-        var cfgByLegacyName = config.Machines
-            .Where(m => /*!m.IsDefault() &&*/ !string.IsNullOrWhiteSpace(m.Name))
-            .GroupBy(m => m.Name!, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+        var (cfgById, cfgByLegacyName) = BuildMachineConfigDictionaries(config);
 
         var objList = Locations.GetLocations()
                                .Where(l => l.objects is not null)
@@ -43,11 +31,39 @@ public static class MachineConfigurator
         }
     }
 
-    private static bool TryGetConfig(
-        Dictionary<string, MachineConfig> cfgById,
-        Dictionary<string, MachineConfig> cfgByLegacyName,
-        Object obj,
-        out MachineConfig cfg)
+    public static void ConfigureOneMachine(this Object obj, ModConfig config, IMonitor monitor)
+    {
+        if (!Context.IsMainPlayer) return;
+
+        monitor.Log("[ConfigureOneMachine] Starting configuration machine", LogLevel.Trace);
+
+        var (cfgById, cfgByLegacyName) = BuildMachineConfigDictionaries(config);
+
+        if (!TryGetConfig(cfgById, cfgByLegacyName, obj, out var cfg))
+            return;
+
+        obj.ConfigureMachine(cfg);
+    }
+    #endregion Public Methods
+
+    #region Private Methods
+    private static (Dictionary<string, MachineConfig>, Dictionary<string, MachineConfig>) BuildMachineConfigDictionaries(ModConfig config)
+    {
+        var cfgById = config.Machines.Where(m => !string.IsNullOrWhiteSpace(m.Id))
+                                     .GroupBy(m => m.Id, StringComparer.Ordinal)
+                                     .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+
+        var cfgByLegacyName = config.Machines.Where(m => !string.IsNullOrWhiteSpace(m.Name))
+                                             .GroupBy(m => m.Name!, StringComparer.Ordinal)
+                                             .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+
+        return (cfgById, cfgByLegacyName);
+    }
+
+    private static bool TryGetConfig(Dictionary<string, MachineConfig> cfgById,
+                                     Dictionary<string, MachineConfig> cfgByLegacyName,
+                                     Object obj,
+                                     out MachineConfig cfg)
     {
         if (!string.IsNullOrWhiteSpace(obj.QualifiedItemId) && cfgById.TryGetValue(obj.QualifiedItemId, out cfg!))
             return true;
@@ -59,52 +75,23 @@ public static class MachineConfigurator
         return false;
     }
 
-    public static void ConfigureOneMachine(this Object obj, ModConfig config)
-    {
-        if (!Context.IsMainPlayer) return;
-
-        var cfgById = config.Machines
-            .Where(m => !string.IsNullOrWhiteSpace(m.Id))
-            .GroupBy(m => m.Id, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
-
-        var cfgByLegacyName = config.Machines
-            .Where(m => !string.IsNullOrWhiteSpace(m.Name))
-            .GroupBy(m => m.Name!, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
-
-        if (TryGetConfig(cfgById, cfgByLegacyName, obj, out var cfg))
-        {
-            obj.ConfigureMachine(cfg);
-        }
-    }
-
     private static void ConfigureMachine(this Object obj, MachineConfig cfg)
     {
         if (obj.MinutesUntilReady <= 0)
         {
-            obj.modData[OriginalKey] = string.Empty;
-            obj.modData[AppliedKey] = string.Empty;
+            obj.modData[Constants.OriginalKey] = string.Empty;
+            obj.modData[Constants.AppliedKey] = string.Empty;
             return;
         }
 
-        // monitor.Log($"[ConfigureMachine] Found object {obj.Name} (QualifiedItemId={obj.QualifiedItemId}) MinutesUntilReady={obj.MinutesUntilReady}", LogLevel.Trace);
+        int original = obj.GetOriginalTime();
 
-        int original = obj.MinutesUntilReady;
-
-        if (obj.modData.TryGetValue(OriginalKey, out string storedOriginal) &&
-            int.TryParse(storedOriginal, out int parsedOriginal) &&
-            parsedOriginal > 0)
-            original = parsedOriginal;
-
-        // monitor.Log($"[ConfigureMachine] original (from modData? {obj.modData.ContainsKey(OriginalKey)}) = {original}", LogLevel.Debug);
-
-        int target = CalculateTarget(cfg, original);
+        int target = cfg.CalculateTarget(original);
 
         if (!IsMachineReady(obj, target)) return;
 
-        obj.modData[OriginalKey] = original.ToString();
-        obj.modData[AppliedKey] = target.ToString();
+        obj.modData[Constants.OriginalKey] = original.ToString();
+        obj.modData[Constants.AppliedKey] = target.ToString();
 
         if (obj is Cask cask)
         {
@@ -122,11 +109,21 @@ public static class MachineConfigurator
         // }
     }
 
+    private static int GetOriginalTime(this Object obj)
+    {
+        if (obj.modData.TryGetValue(Constants.OriginalKey, out string storedOriginal)
+            && int.TryParse(storedOriginal, out int parsedOriginal)
+            && parsedOriginal > 0)
+            return parsedOriginal;
+
+        return obj.MinutesUntilReady;
+    }
+
     private static bool IsMachineReady(Object obj, int target)
     {
         // if (obj.MinutesUntilReady <= target) return false;
 
-        if (obj.modData.TryGetValue(AppliedKey, out string applied))
+        if (obj.modData.TryGetValue(Constants.AppliedKey, out string applied))
         {
             if (int.TryParse(applied, out int appliedValue))
             {
@@ -167,7 +164,7 @@ public static class MachineConfigurator
 
         if (held.Quality > oldQuality)
         {
-            cask.modData[StopAgingKey] = "true";
+            cask.modData[Constants.StopAgingKey] = "true";
             cask.readyForHarvest.Value = true;
 
             cask.onReadyForHarvest();
@@ -178,20 +175,24 @@ public static class MachineConfigurator
             cask.MinutesUntilReady = target;
         }
     }
+
     private static void EnsureFreshState(this Cask cask, Object held)
     {
         if (!cask.modData.TryGetValue("LastItemId", out var last) || last != held.ItemId)
         {
-            cask.modData[StopAgingKey] = "false";
+            cask.modData[Constants.StopAgingKey] = "false";
             cask.modData["LastItemId"] = held.ItemId;
         }
     }
-    private static bool ShouldStopAging(this Cask cask) =>
-        cask.modData.TryGetValue(StopAgingKey, out var v) && v == "true";
+
+    private static bool ShouldStopAging(this Cask cask)
+    {
+        return cask.modData.TryGetValue(Constants.StopAgingKey, out var v) && v == "true";
+    }
 
     private static void ResetCask(this Cask cask)
     {
-        cask.modData[StopAgingKey] = "false";
+        cask.modData[Constants.StopAgingKey] = "false";
         cask.readyForHarvest.Value = false;
         cask.MinutesUntilReady = -1;
     }
@@ -209,12 +210,5 @@ public static class MachineConfigurator
             safety++;
         }
     }
-
-    private static int CalculateTarget(MachineConfig cfg, int original)
-    {
-        if (cfg is null)
-            return original;
-
-        return ConfigUtils.RoundedTime(cfg.Time);
-    }
+    #endregion Private Methods
 }
