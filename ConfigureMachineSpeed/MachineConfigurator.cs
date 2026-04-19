@@ -1,5 +1,4 @@
 using StardewModdingAPI;
-using StardewValley;
 using StardewValley.Objects;
 using StephHoel.ConfigureMachineSpeed.Config;
 using Utils;
@@ -30,19 +29,17 @@ public static class MachineConfigurator
             .GroupBy(m => m.Name!, StringComparer.Ordinal)
             .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
 
-        foreach (GameLocation location in Locations.GetLocations())
+        var objList = Locations.GetLocations()
+                               .Where(l => l.objects is not null)
+                               .SelectMany(l => l.objects.Pairs.Select(p => p.Value))
+                               .Where(p => p is not null);
+
+        foreach (var obj in objList)
         {
-            if (location.objects is null)
+            if (!TryGetConfig(cfgById, cfgByLegacyName, obj, out var cfg))
                 continue;
 
-            foreach (var pair in location.objects.Pairs)
-            {
-                if (pair.Value is not Object obj)
-                    continue;
-
-                if (TryGetConfig(cfgById, cfgByLegacyName, obj, out var cfg))
-                    ConfigureMachine(cfg, obj);
-            }
+            obj.ConfigureMachine(cfg);
         }
     }
 
@@ -67,28 +64,27 @@ public static class MachineConfigurator
         if (!Context.IsMainPlayer) return;
 
         var cfgById = config.Machines
-            // .Where(m => !m.IsDefault())
             .Where(m => !string.IsNullOrWhiteSpace(m.Id))
             .GroupBy(m => m.Id, StringComparer.Ordinal)
             .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
 
         var cfgByLegacyName = config.Machines
-            .Where(m => /*!m.IsDefault() &&*/ !string.IsNullOrWhiteSpace(m.Name))
+            .Where(m => !string.IsNullOrWhiteSpace(m.Name))
             .GroupBy(m => m.Name!, StringComparer.Ordinal)
             .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
 
         if (TryGetConfig(cfgById, cfgByLegacyName, obj, out var cfg))
         {
-            ConfigureMachine(cfg, obj);
+            obj.ConfigureMachine(cfg);
         }
     }
 
-    private static void ConfigureMachine(MachineConfig cfg, Object obj)
+    private static void ConfigureMachine(this Object obj, MachineConfig cfg)
     {
         if (obj.MinutesUntilReady <= 0)
         {
-            obj.modData.Remove(OriginalKey);
-            obj.modData.Remove(AppliedKey);
+            obj.modData[OriginalKey] = string.Empty;
+            obj.modData[AppliedKey] = string.Empty;
             return;
         }
 
@@ -105,25 +101,17 @@ public static class MachineConfigurator
 
         int target = CalculateTarget(cfg, original);
 
-        if (obj.MinutesUntilReady <= target) return;
-
-        if (obj.modData.TryGetValue(AppliedKey, out string applied))
-        {
-            if (int.TryParse(applied, out int appliedValue))
-            {
-                if (appliedValue == target && obj.MinutesUntilReady == target)
-                    return;
-            }
-            else if (applied == "1" && obj.MinutesUntilReady == target)
-            {
-                return;
-            }
-        }
+        if (!IsMachineReady(obj, target)) return;
 
         obj.modData[OriginalKey] = original.ToString();
         obj.modData[AppliedKey] = target.ToString();
 
-        // if (!obj.BaseName.Contains("Cask", StringComparison.InvariantCultureIgnoreCase))
+        if (obj is Cask cask)
+        {
+            cask.ConfigureCask(target);
+            return;
+        }
+
         if (obj.ItemId.IsMachineExcluded()) return;
 
         obj.MinutesUntilReady = target;
@@ -132,50 +120,93 @@ public static class MachineConfigurator
         // {
         //     obj.DayUpdate();
         // }
-
-        // if (obj.BaseName.ContainsIgnoreCase("Cask") && obj is Cask cask)
-        //     cask.ConfigureCask(target);
     }
 
-    private static void ConfigureCask(this Cask cask, int target)
+    private static bool IsMachineReady(Object obj, int target)
+    {
+        // if (obj.MinutesUntilReady <= target) return false;
+
+        if (obj.modData.TryGetValue(AppliedKey, out string applied))
+        {
+            if (int.TryParse(applied, out int appliedValue))
+            {
+                if (appliedValue == target && obj.MinutesUntilReady <= target)
+                    return false;
+            }
+            else if (applied == "1" && obj.MinutesUntilReady <= target)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static void ConfigureCask(this Cask cask, int target)
     {
         // monitor.Log($"[ConfigureMachine] [{obj.DisplayName}] original={original}, applied={target}", LogLevel.Debug);
 
-        if (cask.heldObject.Value == null)
+        if (cask.heldObject.Value is not Object held)
         {
-            cask.modData.Remove(StopAgingKey);
-
-            cask.readyForHarvest.Value = false;
-            cask.MinutesUntilReady = 0;
-
             return;
         }
 
-        if (cask?.heldObject.Value is not Object held)
-            return;
+        // TODO o cask não está voltando ao original antes de aceitar novo item
 
-        if (held.modData.ContainsKey(StopAgingKey))
-            return;
+        cask.ResetCask();
+        cask.EnsureFreshState(held);
 
-        held.MinutesUntilReady = target;
+        if (cask.ShouldStopAging())
+            return;
 
         int oldQuality = held.Quality;
 
-        var days = GetDaysForNextQuality(oldQuality, cask.agingRate.Value);
-
-        for (var i = 0; i < days; i++)
-            cask.DayUpdate();
-
-        var newQuality = held.Quality;
+        cask.AdvanceQualityItem(held, oldQuality);
 
         // monitor.Log($"[ConfigureMachine] OldQuality={oldQuality} NewQuality={newQuality}", LogLevel.Debug);
 
-        if (newQuality > oldQuality)
+        if (held.Quality > oldQuality)
         {
             cask.modData[StopAgingKey] = "true";
-            cask.MinutesUntilReady = target;
-            held.MinutesUntilReady = target;
             cask.readyForHarvest.Value = true;
+
+            cask.onReadyForHarvest();
+        }
+        else
+        {
+            held.MinutesUntilReady = target;
+            cask.MinutesUntilReady = target;
+        }
+    }
+    private static void EnsureFreshState(this Cask cask, Object held)
+    {
+        if (!cask.modData.TryGetValue("LastItemId", out var last) || last != held.ItemId)
+        {
+            cask.modData[StopAgingKey] = "false";
+            cask.modData["LastItemId"] = held.ItemId;
+        }
+    }
+    private static bool ShouldStopAging(this Cask cask) =>
+        cask.modData.TryGetValue(StopAgingKey, out var v) && v == "true";
+
+    private static void ResetCask(this Cask cask)
+    {
+        cask.modData[StopAgingKey] = "false";
+        cask.readyForHarvest.Value = false;
+        cask.MinutesUntilReady = -1;
+    }
+
+    private static void AdvanceQualityItem(this Cask cask, Object held, int oldQuality)
+    {
+        var safety = 0;
+        const int hardCap = 100; // proteção absoluta
+        var maxIterations = Math.Min(cask.daysToMature.Value, hardCap);
+
+
+        while (oldQuality == held.Quality && safety < maxIterations)
+        {
+            cask.DayUpdate();
+            safety++;
         }
     }
 
@@ -185,39 +216,5 @@ public static class MachineConfigurator
             return original;
 
         return ConfigUtils.RoundedTime(cfg.Time);
-    }
-
-    private static int GetDaysForNextQuality(int quality, float agingRate)
-    { // TODO ajustar baseado no tempo total
-        return quality switch
-        {
-            // normal → silver
-            0 => (int)agingRate,
-
-            // silver → gold
-            1 => (int)agingRate,
-
-            // gold → iridium
-            2 => (int)(agingRate * 2),
-
-            // já é iridium
-            _ => 0,
-        };
-    }
-
-    private static int CalculaAvancoEmDias(int tempoTotal, int qualidade)
-    {
-        return (int)(tempoTotal * PorcentagemPorQualidade(qualidade));
-    }
-
-    private static double PorcentagemPorQualidade(int qualidade)
-    {
-        return qualidade switch
-        {
-            0 => 0.25, // normal
-            1 => 0.50, // silver
-            2 => 0.75, // gold
-            _ => 1.00, // iridium
-        };
     }
 }

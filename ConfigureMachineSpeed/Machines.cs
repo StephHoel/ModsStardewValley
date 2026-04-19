@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Machines;
 
@@ -8,7 +7,7 @@ namespace StephHoel.ConfigureMachineSpeed;
 public static class Machines
 {
     private static Dictionary<string, string>? CachedLegacyNameToId;
-    private static List<string>? CachedMachineIds;
+    private static List<MachineConfig>? CachedMachines;
 
     public static string GetTranslation(string machineId, IMonitor? monitor = null)
     {
@@ -38,24 +37,16 @@ public static class Machines
             .ToArray();
     }
 
-    public static List<string> MachineIds
-        => GetMachineIds();
+    public static List<MachineConfig> MachinesList
+        => GetMachines();
 
-    public static MachineConfig[] GetNewMachines(IEnumerable<string>? machineIds = null)
+    public static MachineConfig[] GetMachines(IEnumerable<MachineConfig>? machineIds = null)
     {
-        var source = machineIds?.Distinct(StringComparer.Ordinal).ToList() ?? MachineIds;
-
-        return source.Select(id => new MachineConfig(id)).ToArray();
-    }
-
-    public static MachineConfig[] SetMachines(IEnumerable<MachineConfig?> machines, IEnumerable<string>? machineIds = null)
-    {
-        var machinesSet = new HashSet<MachineConfig>(machines.Where(m => m != null).Cast<MachineConfig>(), new MachinesComparer());
-
-        foreach (var machine in GetNewMachines(machineIds))
-            machinesSet.Add(machine);
-
-        return machinesSet.ToArray();
+        machineIds ??= [];
+        var source = machineIds.ToList();
+        source.AddRange(MachinesList);
+        source = source.GroupBy(m => m.Id).Select(g => g.First()).ToList();
+        return [.. source];
     }
 
     public static bool TryResolveLegacyNameToId(string legacyName, out string? machineId)
@@ -69,20 +60,25 @@ public static class Machines
         return CachedLegacyNameToId.TryGetValue(legacyName, out machineId);
     }
 
-    private static List<string> GetMachineIds()
+    private static List<MachineConfig> GetMachines()
     {
-        if (CachedMachineIds is not null)
-            return CachedMachineIds;
+        if (CachedMachines is not null)
+            return CachedMachines;
 
-        var machineIds = new HashSet<string>(StringComparer.Ordinal);
+        var machines = new HashSet<MachineConfig>();
 
         var machineData = Game1.content.Load<Dictionary<string, MachineData>>("Data/Machines");
         foreach (var machineId in machineData.Keys)
-            machineIds.Add(machineId);
+            machines.Add(new MachineConfig(machineId));
 
-        CachedMachineIds = machineIds.OrderBy(id => id, StringComparer.OrdinalIgnoreCase).ToList();
 
-        return CachedMachineIds;
+
+        CachedMachines = machines.GroupBy(m => m.Id)
+                                 .Select(g => g.First())
+                                 .OrderBy(m => m.Id, StringComparer.OrdinalIgnoreCase)
+                                 .ToList();
+
+        return CachedMachines;
     }
 
     private static Dictionary<string, string> BuildLegacyNameToIdMap()
@@ -112,13 +108,4 @@ public static class Machines
 
         return null;
     }
-}
-
-public class MachinesComparer : IEqualityComparer<MachineConfig>
-{
-    public bool Equals(MachineConfig? x, MachineConfig? y)
-        => x?.Id == y?.Id && x?.Name == y?.Name;
-
-    public int GetHashCode(MachineConfig obj)
-        => obj.Id?.GetHashCode() ?? default;
 }

@@ -16,8 +16,6 @@ public class ModEntry : Mod
 
         Instance = this;
 
-        helper.ReadConfig<ModConfig>(); // read or create
-
         var harmony = new Harmony(this.ModManifest.UniqueID);
         harmony.PatchAll();
 
