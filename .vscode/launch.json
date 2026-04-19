@@ -9,28 +9,32 @@
             "type": "dotnet",
             "request": "launch",
             "projectPath": "${workspaceFolder}\\ConfigureMachineSpeed\\ConfigureMachineSpeed.csproj",
-            "launchConfigurationId": "TargetFramework=;ConfigureMachineSpeed"
+            "launchConfigurationId": "TargetFramework=;ConfigureMachineSpeed",
+            "requireExactSource": false,
         },
         {
             "name": "AddMoney",
             "type": "dotnet",
             "request": "launch",
             "projectPath": "${workspaceFolder}\\AddMoney\\AddMoney.csproj",
-            "launchConfigurationId": "TargetFramework=;AddMoney"
+            "launchConfigurationId": "TargetFramework=;AddMoney",
+            "requireExactSource": false,
         },
         {
             "name": "AutoWater",
             "type": "dotnet",
             "request": "launch",
             "projectPath": "${workspaceFolder}\\AutoWater\\AutoWater.csproj",
-            "launchConfigurationId": "TargetFramework=;AutoWater"
+            "launchConfigurationId": "TargetFramework=;AutoWater",
+            "requireExactSource": false,
         },
         {
             "name": "TranslationSummary",
             "type": "dotnet",
             "request": "launch",
             "projectPath": "${workspaceFolder}\\TranslationSummary\\TranslationSummary.csproj",
-            "launchConfigurationId": "TargetFramework=;TranslationSummary"
+            "launchConfigurationId": "TargetFramework=;TranslationSummary",
+            "requireExactSource": false,
         }
     ]
 }
