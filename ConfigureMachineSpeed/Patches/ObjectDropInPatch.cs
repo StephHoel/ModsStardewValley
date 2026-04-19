@@ -21,7 +21,7 @@ public static class ObjectDropInPatch
         //     ModEntry.Instance.Monitor.Log($"[TESTE] Item <{dropInItem.DisplayName}> inserido em <{__instance.DisplayName}>", LogLevel.Debug);
         // }
 
-        __instance.ConfigureOneMachine(ModEntry.Instance.Helper.ReadConfig<ModConfig>());
+        __instance.ConfigureOneMachine(ModEntry.Instance!.Helper.ReadConfig<ModConfig>(), ModEntry.Instance.Monitor);
 
         // ModEntry.Instance.Monitor.Log($"[TESTE] Maquina <{__instance.DisplayName}> configurada", LogLevel.Debug);
     }

@@ -7,7 +7,7 @@ namespace StephHoel.ConfigureMachineSpeed;
 
 public class ModEntry : Mod
 {
-    internal static ModEntry Instance;
+    internal static ModEntry? Instance;
 
     public override void Entry(IModHelper helper)
     {
@@ -16,7 +16,7 @@ public class ModEntry : Mod
 
         Instance = this;
 
-        var harmony = new Harmony(this.ModManifest.UniqueID);
+        var harmony = new Harmony(ModManifest.UniqueID);
         harmony.PatchAll();
 
         helper.Events.Display.RenderedActiveMenu += (_, _)

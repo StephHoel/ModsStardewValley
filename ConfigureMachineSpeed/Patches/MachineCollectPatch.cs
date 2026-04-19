@@ -13,7 +13,7 @@ public static class MachineCollectPatch
             return;
 
         if (__instance.IsCrystalarium())
-            __instance.ConfigureOneMachine(ModEntry.Instance.Helper.ReadConfig<ModConfig>());
+            __instance.ConfigureOneMachine(ModEntry.Instance!.Helper.ReadConfig<ModConfig>(), ModEntry.Instance.Monitor);
     }
 
     private static bool IsDropIn(Object __instance, bool __result)
