@@ -32,6 +32,11 @@ public class ModEntry : Mod
             helper.WriteConfig(config);
         };
 
+        helper.Events.GameLoop.DayStarted += (_, _) =>
+        {
+            helper.ReadConfig<ModConfig>().ConfigureAllMachines(Monitor);
+        };
+
         helper.Events.GameLoop.TimeChanged += (_, _)
             => helper.ReadConfig<ModConfig>().ConfigureAllMachines(Monitor);
     }
