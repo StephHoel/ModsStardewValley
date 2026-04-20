@@ -60,7 +60,9 @@ public static class ConfigUtils
         if (cfg is null)
             return original;
 
-        return RoundedTime(cfg.Time);
+        var roundedTime = RoundedTime(cfg.Time);
+
+        return Math.Min(original, roundedTime);
     }
 
     private static MachineConfig TryResolveId(MachineConfig m, IMonitor? monitor = null)
@@ -90,5 +92,11 @@ public static class ConfigUtils
         }
 
         return m;
+    }
+
+    public static void ResetMachine(this StardewValley.Object machine)
+    {
+        machine.modData.Remove(Constants.StopAgingKey);
+        machine.modData.Remove(Constants.AppliedKey);
     }
 }

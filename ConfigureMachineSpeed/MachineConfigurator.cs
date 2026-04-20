@@ -77,29 +77,21 @@ public static class MachineConfigurator
 
     private static void ConfigureMachine(this Object obj, MachineConfig cfg)
     {
-        if (obj.MinutesUntilReady <= 0)
+        if (obj.MinutesUntilReady <= 1)
         {
-            obj.modData[Constants.OriginalKey] = string.Empty;
-            obj.modData[Constants.AppliedKey] = string.Empty;
+            obj.ResetMachine();
             return;
         }
 
-        int original = obj.GetOriginalTime();
-
+        int original = obj.MinutesUntilReady;
         int target = cfg.CalculateTarget(original);
 
         if (!IsMachineReady(obj, target)) return;
+        if (obj.ItemId.IsMachineExcluded()) return;
 
-        obj.modData[Constants.OriginalKey] = original.ToString();
         obj.modData[Constants.AppliedKey] = target.ToString();
 
-        if (obj is Cask cask)
-        {
-            cask.ConfigureCask(target);
-            return;
-        }
-
-        if (obj.ItemId.IsMachineExcluded()) return;
+        if (obj.ProcessCask(target)) return;
 
         obj.MinutesUntilReady = target;
 
@@ -109,19 +101,9 @@ public static class MachineConfigurator
         // }
     }
 
-    private static int GetOriginalTime(this Object obj)
-    {
-        if (obj.modData.TryGetValue(Constants.OriginalKey, out string storedOriginal)
-            && int.TryParse(storedOriginal, out int parsedOriginal)
-            && parsedOriginal > 0)
-            return parsedOriginal;
-
-        return obj.MinutesUntilReady;
-    }
-
     private static bool IsMachineReady(Object obj, int target)
     {
-        // if (obj.MinutesUntilReady <= target) return false;
+        if (obj is Cask) return true;
 
         if (obj.modData.TryGetValue(Constants.AppliedKey, out string applied))
         {
@@ -139,75 +121,45 @@ public static class MachineConfigurator
         return true;
     }
 
-    public static void ConfigureCask(this Cask cask, int target)
+    private static bool ProcessCask(this Object obj, int target)
     {
-        // monitor.Log($"[ConfigureMachine] [{obj.DisplayName}] original={original}, applied={target}", LogLevel.Debug);
+        if (obj is not Cask cask) return false;
 
-        if (cask.heldObject.Value is not Object held)
-        {
-            return;
-        }
+        if (cask.MinutesUntilReady > (999999 - target)) return true;
 
-        // TODO o cask não está voltando ao original antes de aceitar novo item
+        if (cask.heldObject.Value is not Object held) return true;
 
-        cask.ResetCask();
-        cask.EnsureFreshState(held);
+        if (!cask.ShouldContinueAging()) return true;
 
-        if (cask.ShouldStopAging())
-            return;
-
-        int oldQuality = held.Quality;
-
-        cask.AdvanceQualityItem(held, oldQuality);
-
-        // monitor.Log($"[ConfigureMachine] OldQuality={oldQuality} NewQuality={newQuality}", LogLevel.Debug);
-
-        if (held.Quality > oldQuality)
-        {
-            cask.modData[Constants.StopAgingKey] = "true";
-            cask.readyForHarvest.Value = true;
-
-            cask.onReadyForHarvest();
-        }
-        else
-        {
-            held.MinutesUntilReady = target;
-            cask.MinutesUntilReady = target;
-        }
+        cask.AdvanceQualityItem();
+        return true;
     }
 
-    private static void EnsureFreshState(this Cask cask, Object held)
+    private static bool ShouldContinueAging(this Cask cask)
     {
-        if (!cask.modData.TryGetValue("LastItemId", out var last) || last != held.ItemId)
-        {
-            cask.modData[Constants.StopAgingKey] = "false";
-            cask.modData["LastItemId"] = held.ItemId;
-        }
+        return !cask.modData.TryGetValue(Constants.StopAgingKey, out var v) || v != "true";
     }
 
-    private static bool ShouldStopAging(this Cask cask)
-    {
-        return cask.modData.TryGetValue(Constants.StopAgingKey, out var v) && v == "true";
-    }
-
-    private static void ResetCask(this Cask cask)
-    {
-        cask.modData[Constants.StopAgingKey] = "false";
-        cask.readyForHarvest.Value = false;
-        cask.MinutesUntilReady = -1;
-    }
-
-    private static void AdvanceQualityItem(this Cask cask, Object held, int oldQuality)
+    private static void AdvanceQualityItem(this Cask cask)
     {
         var safety = 0;
-        const int hardCap = 100; // proteção absoluta
+        const int hardCap = 100;
         var maxIterations = Math.Min(cask.daysToMature.Value, hardCap);
 
+        var item = cask.heldObject.Value;
+        int oldQuality = item.Quality;
 
-        while (oldQuality == held.Quality && safety < maxIterations)
+        while (oldQuality == item.Quality && safety < maxIterations)
         {
             cask.DayUpdate();
             safety++;
+        }
+
+        if (item.Quality > oldQuality)
+        {
+            cask.modData[Constants.StopAgingKey] = "true";
+            cask.MinutesUntilReady = 1;
+            cask.readyForHarvest.Value = true;
         }
     }
     #endregion Private Methods

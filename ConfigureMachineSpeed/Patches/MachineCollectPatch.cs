@@ -1,5 +1,6 @@
 using HarmonyLib;
 using StardewValley.Extensions;
+using StardewValley.Objects;
 using Object = StardewValley.Object;
 
 namespace StephHoel.ConfigureMachineSpeed.Patches;
@@ -7,8 +8,29 @@ namespace StephHoel.ConfigureMachineSpeed.Patches;
 [HarmonyPatch(typeof(Object), nameof(Object.checkForAction))]
 public static class MachineCollectPatch
 {
+    static bool wasReady;
+    static Object? previousHeld;
+
+    public static void Prefix(Object __instance)
+    {
+        if (__instance is Cask cask)
+        {
+            wasReady = cask.readyForHarvest.Value;
+            previousHeld = cask.heldObject.Value;
+        }
+    }
+
     public static void Postfix(Object __instance, bool __result)
     {
+        if (__instance is Cask cask
+            && wasReady
+            && !cask.readyForHarvest.Value
+            && previousHeld != null
+            && cask.heldObject.Value == null)
+        {
+            cask.ResetMachine();
+        }
+
         if (!IsDropIn(__instance, __result))
             return;
 
