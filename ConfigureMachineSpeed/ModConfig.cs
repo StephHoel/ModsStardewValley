@@ -11,7 +11,7 @@ public class ModConfig
 
     private static MachineConfig[] DefaultMachines()
     {
-        var machinesDefault = ConfigureMachineSpeed.Machines.GetNewMachines();
+        var machinesDefault = ConfigureMachineSpeed.Machines.GetMachines();
         return machinesDefault;
     }
 }

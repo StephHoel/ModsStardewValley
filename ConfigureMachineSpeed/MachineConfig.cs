@@ -10,6 +10,4 @@ public class MachineConfig(string id)
     public string? Name { get; set; }
 
     public int Time { get; set; } = 100;
-
-    // public bool IsDefault() => UsePercent && Time == 100;
 }

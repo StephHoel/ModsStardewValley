@@ -1,5 +1,4 @@
 using StardewModdingAPI;
-using StardewValley;
 using StardewValley.Objects;
 using StephHoel.ConfigureMachineSpeed.Config;
 using Utils;
@@ -9,48 +8,62 @@ namespace StephHoel.ConfigureMachineSpeed;
 
 public static class MachineConfigurator
 {
-    private const string AppliedKey = "StephHoel.ConfigureMachineSpeed.applied";
-    private const string OriginalKey = "StephHoel.ConfigureMachineSpeed.original";
-    private const string StopAgingKey = "StephHoel.ConfigureMachineSpeed.stopAging";
-
+    #region Public Methods
     public static void ConfigureAllMachines(this ModConfig config, IMonitor monitor)
     {
         if (!Context.IsMainPlayer) return;
 
         monitor.Log("[ConfigureAllMachines] Starting configuration machines", LogLevel.Trace);
 
-        var cfgById = config.Machines
-            // .Where(m => !m.IsDefault())
-            .Where(m => !string.IsNullOrWhiteSpace(m.Id))
-            .GroupBy(m => m.Id, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+        var (cfgById, cfgByLegacyName) = BuildMachineConfigDictionaries(config);
 
-        var cfgByLegacyName = config.Machines
-            .Where(m => /*!m.IsDefault() &&*/ !string.IsNullOrWhiteSpace(m.Name))
-            .GroupBy(m => m.Name!, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+        var objList = Locations.GetLocations()
+                               .Where(l => l.objects is not null)
+                               .SelectMany(l => l.objects.Pairs.Select(p => p.Value))
+                               .Where(p => p is not null);
 
-        foreach (GameLocation location in Locations.GetLocations())
+        foreach (var obj in objList)
         {
-            if (location.objects is null)
+            if (!TryGetConfig(cfgById, cfgByLegacyName, obj, out var cfg))
                 continue;
 
-            foreach (var pair in location.objects.Pairs)
-            {
-                if (pair.Value is not Object obj)
-                    continue;
-
-                if (TryGetConfig(cfgById, cfgByLegacyName, obj, out var cfg))
-                    ConfigureMachine(cfg, obj);
-            }
+            obj.ConfigureMachine(cfg);
         }
     }
 
-    private static bool TryGetConfig(
-        Dictionary<string, MachineConfig> cfgById,
-        Dictionary<string, MachineConfig> cfgByLegacyName,
-        Object obj,
-        out MachineConfig cfg)
+    public static void ConfigureOneMachine(this Object obj, ModConfig config, IMonitor monitor)
+    {
+        if (!Context.IsMainPlayer) return;
+
+        monitor.Log("[ConfigureOneMachine] Starting configuration machine", LogLevel.Trace);
+
+        var (cfgById, cfgByLegacyName) = BuildMachineConfigDictionaries(config);
+
+        if (!TryGetConfig(cfgById, cfgByLegacyName, obj, out var cfg))
+            return;
+
+        obj.ConfigureMachine(cfg);
+    }
+    #endregion Public Methods
+
+    #region Private Methods
+    private static (Dictionary<string, MachineConfig>, Dictionary<string, MachineConfig>) BuildMachineConfigDictionaries(ModConfig config)
+    {
+        var cfgById = config.Machines.Where(m => !string.IsNullOrWhiteSpace(m.Id))
+                                     .GroupBy(m => m.Id, StringComparer.Ordinal)
+                                     .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+
+        var cfgByLegacyName = config.Machines.Where(m => !string.IsNullOrWhiteSpace(m.Name))
+                                             .GroupBy(m => m.Name!, StringComparer.Ordinal)
+                                             .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+
+        return (cfgById, cfgByLegacyName);
+    }
+
+    private static bool TryGetConfig(Dictionary<string, MachineConfig> cfgById,
+                                     Dictionary<string, MachineConfig> cfgByLegacyName,
+                                     Object obj,
+                                     out MachineConfig cfg)
     {
         if (!string.IsNullOrWhiteSpace(obj.QualifiedItemId) && cfgById.TryGetValue(obj.QualifiedItemId, out cfg!))
             return true;
@@ -62,70 +75,23 @@ public static class MachineConfigurator
         return false;
     }
 
-    public static void ConfigureOneMachine(this Object obj, ModConfig config)
+    private static void ConfigureMachine(this Object obj, MachineConfig cfg)
     {
-        if (!Context.IsMainPlayer) return;
-
-        var cfgById = config.Machines
-            // .Where(m => !m.IsDefault())
-            .Where(m => !string.IsNullOrWhiteSpace(m.Id))
-            .GroupBy(m => m.Id, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
-
-        var cfgByLegacyName = config.Machines
-            .Where(m => /*!m.IsDefault() &&*/ !string.IsNullOrWhiteSpace(m.Name))
-            .GroupBy(m => m.Name!, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
-
-        if (TryGetConfig(cfgById, cfgByLegacyName, obj, out var cfg))
+        if (obj.MinutesUntilReady <= 1)
         {
-            ConfigureMachine(cfg, obj);
-        }
-    }
-
-    private static void ConfigureMachine(MachineConfig cfg, Object obj)
-    {
-        // if (cfg.UsePercent && cfg.Time == 100)
-        //     return;
-
-        if (obj.MinutesUntilReady <= 0)
-        {
-            obj.modData.Remove(OriginalKey);
-            obj.modData.Remove(AppliedKey);
+            obj.ResetMachine();
             return;
         }
 
-        // monitor.Log($"[ConfigureMachine] Found object {obj.Name} (QualifiedItemId={obj.QualifiedItemId}) MinutesUntilReady={obj.MinutesUntilReady}", LogLevel.Trace);
-
         int original = obj.MinutesUntilReady;
+        int target = cfg.CalculateTarget(original);
 
-        if (obj.modData.TryGetValue(OriginalKey, out string storedOriginal) &&
-            int.TryParse(storedOriginal, out int parsedOriginal) &&
-            parsedOriginal > 0)
-            original = parsedOriginal;
-
-        // monitor.Log($"[ConfigureMachine] original (from modData? {obj.modData.ContainsKey(OriginalKey)}) = {original}", LogLevel.Debug);
-
-        int target = CalculateTarget(cfg, original);
-
-        // monitor.Log($"[ConfigureMachine] calculated target (UsePercent={cfg.UsePercent}, Time={cfg.Time}) = {target}", LogLevel.Debug);
-
-        if (obj.MinutesUntilReady <= target) return;
-
-        if (obj.modData.TryGetValue(AppliedKey, out string applied))
-        {
-            if (int.TryParse(applied, out int appliedValue))
-            {
-                if (appliedValue == target) return;
-            }
-            else if (applied == "1") return;
-        }
-
-        obj.modData[OriginalKey] = original.ToString();
-        obj.modData[AppliedKey] = target.ToString();
-
-        // if (!obj.BaseName.Contains("Cask", StringComparison.InvariantCultureIgnoreCase))
+        if (!IsMachineReady(obj, target)) return;
         if (obj.ItemId.IsMachineExcluded()) return;
+
+        obj.modData[Constants.AppliedKey] = target.ToString();
+
+        if (obj.ProcessCask(target)) return;
 
         obj.MinutesUntilReady = target;
 
@@ -133,101 +99,68 @@ public static class MachineConfigurator
         // {
         //     obj.DayUpdate();
         // }
-
-        // if (obj.BaseName.ContainsIgnoreCase("Cask") && obj is Cask cask)
-        //     cask.ConfigureCask(target);
     }
 
-    private static void ConfigureCask(this Cask cask, int target)
+    private static bool IsMachineReady(Object obj, int target)
     {
-        // monitor.Log($"[ConfigureMachine] [{obj.DisplayName}] original={original}, applied={target}", LogLevel.Debug);
+        if (obj is Cask) return true;
 
-        if (cask.heldObject.Value == null)
+        if (obj.modData.TryGetValue(Constants.AppliedKey, out string applied))
         {
-            cask.modData.Remove(StopAgingKey);
-
-            cask.readyForHarvest.Value = false;
-            cask.MinutesUntilReady = 0;
-
-            return;
+            if (int.TryParse(applied, out int appliedValue))
+            {
+                if (appliedValue == target && obj.MinutesUntilReady <= target)
+                    return false;
+            }
+            else if (applied == "1" && obj.MinutesUntilReady <= target)
+            {
+                return false;
+            }
         }
 
-        if (cask?.heldObject.Value is not Object held)
-            return;
+        return true;
+    }
 
-        if (held.modData.ContainsKey(StopAgingKey))
-            return;
+    private static bool ProcessCask(this Object obj, int target)
+    {
+        if (obj is not Cask cask) return false;
 
-        held.MinutesUntilReady = target;
+        if (cask.MinutesUntilReady > (999999 - target)) return true;
 
-        int oldQuality = held.Quality;
+        if (cask.heldObject.Value is not Object held) return true;
 
-        var days = GetDaysForNextQuality(oldQuality, cask.agingRate.Value);
+        if (!cask.ShouldContinueAging()) return true;
 
-        for (var i = 0; i < days; i++)
-            cask.DayUpdate();
+        cask.AdvanceQualityItem();
+        return true;
+    }
 
-        var newQuality = held.Quality;
+    private static bool ShouldContinueAging(this Cask cask)
+    {
+        return !cask.modData.TryGetValue(Constants.StopAgingKey, out var v) || v != "true";
+    }
 
-        // monitor.Log($"[ConfigureMachine] OldQuality={oldQuality} NewQuality={newQuality}", LogLevel.Debug);
+    private static void AdvanceQualityItem(this Cask cask)
+    {
+        var safety = 0;
+        const int hardCap = 100;
+        var maxIterations = Math.Min(cask.daysToMature.Value, hardCap);
 
-        if (newQuality > oldQuality)
+        var item = cask.heldObject.Value;
+        int oldQuality = item.Quality;
+
+        while (oldQuality == item.Quality && safety < maxIterations)
         {
-            cask.modData[StopAgingKey] = "true";
-            cask.MinutesUntilReady = target;
-            held.MinutesUntilReady = target;
+            cask.DayUpdate();
+            safety++;
+        }
+
+        if (item.Quality > oldQuality)
+        {
+            cask.modData[Constants.StopAgingKey] = "true";
+            cask.MinutesUntilReady = 1;
             cask.readyForHarvest.Value = true;
         }
     }
-
-    private static int CalculateTarget(MachineConfig cfg, int original)
-    {
-        if (cfg is null)
-            return original;
-
-        // if (cfg.UsePercent)
-        // {
-        //     int percent = cfg.Time;
-        //     int calculated = (int)Math.Ceiling(original * (percent / 100.0));
-        //     calculated = Math.Max(1, calculated);
-        //     calculated = Math.Min(100, calculated);
-        //     cfg.Time = calculated;
-        // }
-
-        return ConfigUtils.RoundedTime(cfg.Time);
-    }
-
-    private static int GetDaysForNextQuality(int quality, float agingRate)
-    { // TODO ajustar baseado no tempo total
-        return quality switch
-        {
-            // normal → silver
-            0 => (int)agingRate,
-
-            // silver → gold
-            1 => (int)agingRate,
-
-            // gold → iridium
-            2 => (int)(agingRate * 2),
-
-            // já é iridium
-            _ => 0,
-        };
-    }
-
-    private static int CalculaAvancoEmDias(int tempoTotal, int qualidade)
-    {
-        return (int)(tempoTotal * PorcentagemPorQualidade(qualidade));
-    }
-
-    private static double PorcentagemPorQualidade(int qualidade)
-    {
-        return qualidade switch
-        {
-            0 => 0.25, // normal
-            1 => 0.50, // silver
-            2 => 0.75, // gold
-            _ => 1.00, // iridium
-        };
-    }
+    #endregion Private Methods
 }

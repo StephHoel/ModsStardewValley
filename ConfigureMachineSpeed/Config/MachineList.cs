@@ -15,7 +15,7 @@ public static class MachineList
     private static readonly Dictionary<string, string> DayUpdateMachines = new()
     {
         {"(BC)10","Bee House"},
-        {"(BC)163","Cask"},
+        // {"(BC)163","Cask"},
         {"(BC)246","Coffee Maker"},
         {"710", "Crab Pot"},
         {"(BC)Dehydrator","Dehydrator"},

@@ -49,4 +49,22 @@ git checkout main
 git fetch --prune
 
 git branch -D nome_da_branch
+
+---
+
+## MODS
+
+### CMS Feature
+
+* Outras máquinas que envelhecem apenas via DayUpdate identificadas. Lógica própria deve ser testada para cada uma
+
+* Fazer novas fotos (prints) para colocar na página do mod
+
+---
+
+### O que foi aplicado na atualização - CMS v2.2.x
+
+* ATUALIZAÇÃO
+
+### Preciso validar em detalhe (antes de publicar)
 -->

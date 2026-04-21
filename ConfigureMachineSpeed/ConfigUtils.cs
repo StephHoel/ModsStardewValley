@@ -1,6 +1,5 @@
 using StardewModdingAPI;
 using StardewValley.Extensions;
-using StardewValley.Objects;
 
 namespace StephHoel.ConfigureMachineSpeed;
 
@@ -11,49 +10,33 @@ public static class ConfigUtils
 
         monitor?.Log($"[ConfigUtils] Starting normalize config", LogLevel.Trace);
 
-        cfg.Machines ??= Machines.GetNewMachines();
-
-        if (cfg.Machines.All(m => string.IsNullOrWhiteSpace(m.Name)))
-            return cfg;
+        cfg.Machines = Machines.GetMachines(cfg.Machines);
 
         var machinesList = new List<MachineConfig>();
 
         foreach (var m in cfg.Machines)
         {
-            var machine = TryResolveId(m, monitor);
+            var machine = TryResolveId(m, monitor) ?? m;
 
             machine = NormalizeTime(machine);
 
-            if (machinesList.Any(m => m.Id == machine.Id && m.Time == machine.Time /*&& m.UsePercent == machine.UsePercent*/))
+            if (machinesList.Any(m => m.Id == machine.Id))
                 continue;
 
-            if (machine.Id != Machines.GetIdByMachineName(nameof(Cask)))
-                machinesList.Add(machine);
+            machinesList.Add(machine);
         }
 
-        cfg.Machines = machinesList.ToArray();
+        cfg.Machines = [.. machinesList];
 
         return cfg;
     }
 
     private static MachineConfig NormalizeTime(MachineConfig machine)
     {
-        // if (machine.UsePercent)
-        // {
-        //     if (machine.Time < 1)
-        //         machine.Time = 1;
-
-        //     if (machine.Time > 100)
-        //         machine.Time = 100;
-        // }
-
-        // if (!machine.UsePercent)
-        // {
         if (machine.Time < 10)
             machine.Time = 10;
 
         machine.Time = RoundedTime(machine.Time);
-        // }
 
         return machine;
     }
@@ -70,6 +53,16 @@ public static class ConfigUtils
             rounded = 10;
 
         return rounded;
+    }
+
+    public static int CalculateTarget(this MachineConfig cfg, int original)
+    {
+        if (cfg is null)
+            return original;
+
+        var roundedTime = RoundedTime(cfg.Time);
+
+        return Math.Min(original, roundedTime);
     }
 
     private static MachineConfig TryResolveId(MachineConfig m, IMonitor? monitor = null)
@@ -99,5 +92,11 @@ public static class ConfigUtils
         }
 
         return m;
+    }
+
+    public static void ResetMachine(this StardewValley.Object machine)
+    {
+        machine.modData.Remove(Constants.StopAgingKey);
+        machine.modData.Remove(Constants.AppliedKey);
     }
 }

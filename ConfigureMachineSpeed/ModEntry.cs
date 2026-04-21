@@ -7,7 +7,7 @@ namespace StephHoel.ConfigureMachineSpeed;
 
 public class ModEntry : Mod
 {
-    internal static ModEntry Instance;
+    internal static ModEntry? Instance;
 
     public override void Entry(IModHelper helper)
     {
@@ -16,9 +16,7 @@ public class ModEntry : Mod
 
         Instance = this;
 
-        helper.ReadConfig<ModConfig>(); // read or create
-
-        var harmony = new Harmony(this.ModManifest.UniqueID);
+        var harmony = new Harmony(ModManifest.UniqueID);
         harmony.PatchAll();
 
         helper.Events.Display.RenderedActiveMenu += (_, _)
@@ -32,6 +30,11 @@ public class ModEntry : Mod
             var config = helper.ReadConfig<ModConfig>();
             config.NormalizeMachineConfig(Monitor);
             helper.WriteConfig(config);
+        };
+
+        helper.Events.GameLoop.DayStarted += (_, _) =>
+        {
+            helper.ReadConfig<ModConfig>().ConfigureAllMachines(Monitor);
         };
 
         helper.Events.GameLoop.TimeChanged += (_, _)
