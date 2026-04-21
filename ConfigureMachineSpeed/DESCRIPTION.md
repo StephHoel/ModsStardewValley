@@ -44,6 +44,7 @@
 [size=4]Tested and Supported Machines:[/size]
 [list]
 [*]Bone Mill
+[*]Cask
 [*]Charcoal Kiln
 [*]Cheese Press
 [*]Crystalarium
@@ -67,7 +68,6 @@
 (these still require sleeping to complete their process)
 [list]
 [*]Bee House
-[*]Cask
 [*]Coffee Maker
 [*]Crab Pot
 [*]Dehydrator
