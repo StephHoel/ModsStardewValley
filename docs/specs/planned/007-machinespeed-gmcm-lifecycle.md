@@ -1,18 +1,18 @@
-# 007 - Configure Machine Speed: GMCM lifecycle
+# 007 - Configure Machine Speed: ciclo de vida do GMCM
 
-**Priority:** P2  
-**Area:** Configure Machine Speed
+**Prioridade:** P2  
+**Área:** Configure Machine Speed
 
-## Context
-GMCM registration appears to be initiated from `RenderedActiveMenu`, which can run repeatedly and may cause redundant registration work.
+## Contexto
+A integração com o GMCM aparentemente é registrada a partir de `RenderedActiveMenu`, evento que pode ocorrer repetidamente e provocar trabalho redundante de registro.
 
-## Requirements
-- Register GMCM integration once at the appropriate lifecycle event (normally `GameLaunched`).
-- Keep config read/write callbacks current and persist changes through the established config flow.
-- Handle GMCM being absent without errors.
-- Avoid duplicate subscriptions or repeated registration.
+## Requisitos
+- Registrar a integração com o GMCM uma única vez no evento de ciclo de vida apropriado, normalmente `GameLaunched`.
+- Manter atualizados os callbacks de leitura e gravação da configuração e persistir as alterações pelo fluxo já estabelecido.
+- Tratar a ausência do GMCM sem gerar erros.
+- Evitar inscrições duplicadas em eventos ou registros repetidos.
 
-## Acceptance criteria
-- Registration occurs once per game launch.
-- Changes in GMCM take effect and persist after restart.
-- The mod works when GMCM is not installed.
+## Critérios de aceitação
+- O registro acontece uma única vez por inicialização do jogo.
+- Alterações feitas no GMCM entram em vigor e são preservadas após reiniciar o jogo.
+- O mod funciona mesmo quando o GMCM não está instalado.

@@ -1,17 +1,17 @@
-# 006 - AutoWater: compatibility metadata
+# 006 - AutoWater: metadados de compatibilidade
 
-**Priority:** P2  
-**Area:** AutoWater
+**Prioridade:** P2  
+**Área:** AutoWater
 
-## Context
-The Nexus page has been reported to list SMAPI 3.0.0, while the inspected manifest reports 4.2.0.
+## Contexto
+Foi relatado que a página do Nexus informa SMAPI 3.0.0 como requisito, enquanto o manifesto inspecionado informa 4.2.0.
 
-## Requirements
-- Determine the actual minimum supported SMAPI version from APIs used and release testing.
-- Align manifest, Nexus metadata, README, and release notes.
-- State supported Stardew Valley and SMAPI versions clearly.
-- Do not raise or lower minimum versions without compatibility verification.
+## Requisitos
+- Determinar a versão mínima real do SMAPI com base nas APIs utilizadas e em testes de compatibilidade.
+- Alinhar o manifesto, os metadados do Nexus, o README e as notas de versão.
+- Informar claramente as versões compatíveis de Stardew Valley e SMAPI.
+- Não aumentar nem reduzir a versão mínima sem verificar a compatibilidade.
 
-## Acceptance criteria
-- Published metadata agrees across all distribution channels.
-- The mod loads on the declared minimum version or the minimum is updated with evidence.
+## Critérios de aceitação
+- Os metadados publicados são consistentes em todos os canais de distribuição.
+- O mod é carregado na versão mínima declarada ou o requisito é atualizado com justificativa e evidências.

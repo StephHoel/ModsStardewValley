@@ -1,18 +1,18 @@
-# 008 - Configure Machine Speed: runtime indexing
+# 008 - Configure Machine Speed: indexação durante a execução
 
-**Priority:** P2  
-**Area:** Configure Machine Speed
+**Prioridade:** P2  
+**Área:** Configure Machine Speed
 
-## Context
-`ConfigureAllMachines` appears to rebuild machine indexes by ID and legacy name on repeated calls. The actual performance impact should be measured before optimization.
+## Contexto
+O método `ConfigureAllMachines` aparentemente reconstrói índices de máquinas por ID e nome legado em chamadas repetidas. O impacto real no desempenho deve ser medido antes de qualquer otimização.
 
-## Requirements
-- Profile the current path under representative machine counts and call frequency.
-- Cache derived indexes only where profiling demonstrates benefit.
-- Invalidate caches safely when configuration, save, or relevant content changes.
-- Prefer stable qualified item IDs; retain legacy-name compatibility where needed.
+## Requisitos
+- Medir o desempenho do fluxo atual com quantidades representativas de máquinas e frequências de chamada.
+- Armazenar índices derivados em cache somente quando a medição demonstrar benefício.
+- Invalidar os caches com segurança quando houver mudanças na configuração, no salvamento ou no conteúdo relevante.
+- Preferir IDs qualificados e estáveis, mantendo a compatibilidade com nomes legados quando necessário.
 
-## Acceptance criteria
-- Benchmark results document baseline and outcome.
-- Cache invalidation tests prevent stale configuration.
-- Behavior remains identical for supported machine definitions.
+## Critérios de aceitação
+- Os resultados dos testes de desempenho documentam o cenário inicial e o resultado da mudança.
+- Testes de invalidação impedem o uso de configurações obsoletas.
+- O comportamento permanece idêntico para todas as definições de máquinas suportadas.

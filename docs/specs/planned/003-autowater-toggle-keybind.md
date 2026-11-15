@@ -1,18 +1,18 @@
-# 003 - AutoWater: toggle keybind
+# 003 - AutoWater: tecla de alternância
 
-**Priority:** P1  
-**Area:** AutoWater
+**Prioridade:** P1  
+**Área:** AutoWater
 
-## Context
-GMCM exposes a keybind (default reported as `O`) and its description promises activation toggling. Static inspection did not locate a current input handler that changes `IsActive`; runtime verification is required.
+## Contexto
+O GMCM disponibiliza uma tecla de atalho (relatada como `O` por padrão) cuja descrição promete alternar a ativação do AutoWater. A análise estática não identificou um manipulador de entrada atual que altere `IsActive`; é necessário verificar o comportamento durante a execução do jogo.
 
-## Requirements
-- Verify that the configured keybind toggles AutoWater on and off.
-- If unsupported, implement the handler or correct the setting/description so it does not promise unavailable behavior.
-- Respect custom keybinds and avoid handling input while the player is typing in a text field.
-- Provide clear feedback only when appropriate and avoid repeated toggles from key-repeat events.
+## Requisitos
+- Verificar se a tecla configurada realmente ativa e desativa o AutoWater.
+- Caso o comportamento não exista, implementar o manipulador ou corrigir a configuração e sua descrição para não prometer uma funcionalidade indisponível.
+- Respeitar teclas personalizadas e não processar a entrada enquanto o jogador estiver digitando em um campo de texto.
+- Exibir feedback quando apropriado e evitar alternâncias repetidas causadas pela repetição automática da tecla.
 
-## Acceptance criteria
-- Default and custom bindings both work.
-- Typing in chat, menus, and text inputs does not accidentally toggle the feature.
-- State and displayed configuration remain synchronized after toggling.
+## Critérios de aceitação
+- A tecla padrão e as teclas personalizadas funcionam.
+- Digitar no chat, em menus ou em campos de texto não alterna o recurso acidentalmente.
+- O estado em execução e o estado exibido na configuração permanecem sincronizados.

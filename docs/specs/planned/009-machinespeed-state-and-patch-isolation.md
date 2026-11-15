@@ -1,18 +1,18 @@
-# 009 - Configure Machine Speed: patch state isolation
+# 009 - Configure Machine Speed: isolamento de estado dos patches
 
-**Priority:** P1  
-**Area:** Configure Machine Speed
+**Prioridade:** P1  
+**Área:** Configure Machine Speed
 
-## Context
-`MachineCollectPatch` uses static state such as `wasReady` and `previousHeld`. Shared state may leak between machines, players, or interleaved patch invocations.
+## Contexto
+O patch `MachineCollectPatch` utiliza estados estáticos, como `wasReady` e `previousHeld`. Um estado compartilhado pode vazar entre máquinas, jogadores ou chamadas intercaladas do patch.
 
-## Requirements
-- Identify the exact Harmony patch lifecycle and state ownership requirements.
-- Replace shared mutable state with per-invocation or correctly scoped state.
-- Ensure compatibility with other patches and avoid assumptions about call ordering.
-- Keep patch application idempotent and report patch failures clearly.
+## Requisitos
+- Identificar o ciclo de vida exato do patch Harmony e os requisitos de escopo do estado.
+- Substituir o estado mutável compartilhado por estado associado à chamada ou ao contexto correto.
+- Garantir compatibilidade com outros patches e não depender de uma ordem de execução presumida.
+- Manter a aplicação dos patches idempotente e informar claramente falhas de aplicação.
 
-## Acceptance criteria
-- Tests cover interleaved operations on multiple machines and held-button transitions.
-- One machine's state cannot affect another machine's processing.
-- Compatibility smoke tests cover the supported Harmony/SMAPI environment.
+## Critérios de aceitação
+- Testes cobrem operações intercaladas em várias máquinas e transições de botões pressionados.
+- O estado de uma máquina não interfere no processamento de outra.
+- Testes de integração verificam a compatibilidade com as versões suportadas de Harmony e SMAPI.

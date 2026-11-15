@@ -1,20 +1,20 @@
-# 001 - AddMoney: balance safety and feedback
+# 001 - AddMoney: segurança do saldo e feedback
 
-**Priority:** P1  
-**Area:** AddMoney
+**Prioridade:** P1  
+**Área:** AddMoney
 
-## Context
-The money command should not allow invalid values or produce misleading feedback when the player or balance state is unavailable.
+## Contexto
+O comando de adição de dinheiro não deve aceitar valores inválidos nem apresentar mensagens incorretas quando o jogador ou o estado do saldo não estiver disponível.
 
-## Requirements
-- Validate that the target player is available before changing their balance.
-- Accept only positive amounts; reject zero and negative values with actionable feedback.
-- Prevent integer overflow and define behavior at the game's supported balance limit.
-- Report the amount actually added, not merely the requested amount, if the game clamps the balance.
-- Keep command parsing and user-facing messages consistent with the mod's localization conventions.
+## Requisitos
+- Validar se o jogador de destino está disponível antes de alterar o saldo.
+- Aceitar somente valores positivos; rejeitar zero e valores negativos com uma mensagem útil.
+- Evitar estouro de inteiro e definir o comportamento ao atingir o limite de saldo suportado pelo jogo.
+- Se o jogo limitar o saldo, informar o valor efetivamente adicionado, não apenas o valor solicitado.
+- Manter a análise dos argumentos e as mensagens consistentes com o sistema de localização do mod.
 
-## Acceptance criteria
-- Tests cover missing player, malformed input, zero, negative, normal, very large, and near-limit amounts.
-- No invalid input changes the balance.
-- Feedback accurately reflects the resulting balance change.
-- Existing valid command usage remains compatible.
+## Critérios de aceitação
+- Testes cobrem jogador ausente, entrada malformada, zero, valor negativo, valor normal, valor muito alto e valores próximos ao limite.
+- Entradas inválidas não alteram o saldo.
+- O feedback corresponde exatamente à alteração realizada.
+- Os usos válidos existentes do comando continuam funcionando.

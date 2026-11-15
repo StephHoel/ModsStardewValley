@@ -1,18 +1,18 @@
-# 004 - AutoWater: GMCM reset state
+# 004 - AutoWater: estado após redefinição no GMCM
 
-**Priority:** P1  
-**Area:** AutoWater
+**Prioridade:** P1  
+**Área:** AutoWater
 
-## Context
-Resetting GMCM configuration appears to replace the config instance. Callbacks or closures may continue referencing the previous instance.
+## Contexto
+A redefinição das configurações pelo GMCM aparentemente substitui a instância do objeto de configuração. Callbacks ou closures podem continuar referenciando a instância anterior.
 
-## Requirements
-- Ensure all GMCM callbacks read and write the current configuration object.
-- Rebuild or rebind callbacks safely when configuration is reset or reloaded.
-- Persist reset values through the normal save path.
-- Avoid stale references and duplicate event subscriptions.
+## Requisitos
+- Garantir que todos os callbacks do GMCM leiam e alterem o objeto de configuração atual.
+- Reconstruir ou atualizar os callbacks com segurança quando a configuração for redefinida ou recarregada.
+- Persistir os valores redefinidos pelo fluxo normal de gravação da configuração.
+- Evitar referências obsoletas e inscrições duplicadas em eventos.
 
-## Acceptance criteria
-- Reset restores documented defaults in the UI and runtime.
-- Saving and restarting preserves the reset values.
-- Subsequent edits after reset affect runtime behavior.
+## Critérios de aceitação
+- A redefinição restaura os valores padrão documentados tanto na interface quanto durante a execução.
+- Salvar e reiniciar o jogo preserva os valores redefinidos.
+- Alterações feitas depois da redefinição continuam afetando o comportamento do mod.

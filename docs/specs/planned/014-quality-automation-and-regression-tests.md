@@ -1,19 +1,19 @@
-# 014 - All mods: quality automation and regression tests
+# 014 - Todos os mods: automação de qualidade e testes de regressão
 
-**Priority:** P1  
-**Area:** Cross-cutting
+**Prioridade:** P1  
+**Área:** Transversal
 
-## Context
-The solution appears to lack a dedicated automated test project. Game integration is difficult to exercise in ordinary unit tests, so test boundaries should be deliberate.
+## Contexto
+A solução aparentemente não possui um projeto dedicado a testes automatizados. Como é difícil exercitar integrações com o jogo em testes unitários comuns, os limites entre testes automatizados e verificações manuais devem ser definidos deliberadamente.
 
-## Requirements
-- Introduce a test project for pure logic: configuration validation, time calculations, ID mapping, and translation comparison.
-- Add narrow abstractions or fakes for GMCM and game-facing dependencies where this improves testability.
-- Add build/load smoke checks for SMAPI and Harmony integration where feasible.
-- Convert known historical reports (including shed/interior coverage, duplicate processing, and stutter) into regression scenarios, without treating unverified reports as confirmed defects.
-- Document which behaviors require in-game manual verification.
+## Requisitos
+- Introduzir um projeto de testes para lógica pura: validação de configurações, cálculos de tempo, mapeamento de IDs e comparação de traduções.
+- Criar abstrações ou dublês restritos para dependências do GMCM e do jogo quando isso melhorar a testabilidade.
+- Adicionar verificações básicas de compilação e carregamento para integrações com SMAPI e Harmony, quando viável.
+- Transformar relatos históricos conhecidos, incluindo cobertura de galpões/interiores, processamento duplicado e travamentos momentâneos, em cenários de regressão, sem tratar relatos não verificados como defeitos confirmados.
+- Documentar quais comportamentos exigem verificação manual dentro do jogo.
 
-## Acceptance criteria
-- Core deterministic logic has repeatable automated tests.
-- Tests run in CI and failures block validation.
-- Manual smoke-test steps are documented for behavior that cannot be reliably unit-tested.
+## Critérios de aceitação
+- A lógica determinística central possui testes automatizados e reproduzíveis.
+- Os testes são executados no CI e suas falhas impedem a validação.
+- Há instruções de testes manuais para comportamentos que não podem ser cobertos de forma confiável por testes unitários.

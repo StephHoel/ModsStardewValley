@@ -1,18 +1,18 @@
-# 002 - AddMoney: configuration and Nexus consistency
+# 002 - AddMoney: consistência entre configuração e Nexus
 
-**Priority:** P2  
-**Area:** AddMoney
+**Prioridade:** P2  
+**Área:** AddMoney
 
-## Context
-The code default observed for `GoldToAdd` is `100000`, while the published Nexus description has been reported as “100.00 Gold”. The unit or formatting may be inconsistent.
+## Contexto
+O valor padrão observado no código para `GoldToAdd` é `100000`, enquanto a descrição publicada no Nexus foi relatada como “100.00 Gold”. A unidade ou a formatação pode estar inconsistente.
 
-## Requirements
-- Confirm the intended unit and default amount from the implementation and release history.
-- Align the config default, in-game description, README, changelog, and Nexus description.
-- Explain whether the value is raw integer gold or a formatted currency amount.
-- Avoid silently changing existing player configuration.
+## Requisitos
+- Confirmar a unidade e o valor padrão pretendidos com base na implementação e no histórico de versões.
+- Alinhar o valor padrão da configuração, a descrição exibida no jogo, o README, o changelog e a descrição no Nexus.
+- Explicar se o valor representa ouro inteiro sem formatação ou um valor monetário formatado.
+- Não alterar silenciosamente configurações já existentes dos jogadores.
 
-## Acceptance criteria
-- One unambiguous default is documented everywhere.
-- Existing config files retain their values unless an explicit migration is required.
-- Documentation examples match actual command/config behavior.
+## Critérios de aceitação
+- O valor padrão é descrito sem ambiguidades em todos os canais.
+- Arquivos de configuração existentes preservam seus valores, salvo se houver uma migração explícita.
+- Exemplos da documentação correspondem ao comportamento real do comando e da configuração.

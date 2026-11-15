@@ -1,19 +1,19 @@
-# 005 - AutoWater: location coverage
+# 005 - AutoWater: cobertura de localidades
 
-**Priority:** P1  
-**Area:** AutoWater
+**Prioridade:** P1  
+**Área:** AutoWater
 
-## Context
-AutoWater iterates `Game1.locations`, while `Utils.Locations.GetLocations()` appears to include additional interiors. Sheds, greenhouses, interiors, and custom locations may therefore be treated inconsistently.
+## Contexto
+O AutoWater percorre `Game1.locations`, enquanto `Utils.Locations.GetLocations()` aparentemente inclui interiores adicionais. Com isso, celeiros, estufas, galpões e localidades personalizadas podem receber tratamento inconsistente.
 
-## Requirements
-- Define explicitly which location types should be processed.
-- Verify coverage for farm buildings/interiors, greenhouse, sheds, and supported custom locations.
-- Avoid processing the same location or crop more than once.
-- Handle unloaded, inaccessible, or invalid locations safely.
-- Document intentional exclusions.
+## Requisitos
+- Definir explicitamente quais tipos de localidades devem ser processados.
+- Verificar a cobertura de interiores de construções da fazenda, estufa, galpões e localidades personalizadas compatíveis.
+- Evitar processar a mesma localidade ou plantação mais de uma vez.
+- Tratar com segurança localidades não carregadas, inacessíveis ou inválidas.
+- Documentar exclusões intencionais.
 
-## Acceptance criteria
-- A location coverage test matrix exists.
-- Supported locations are processed once; excluded locations are intentionally and consistently skipped.
-- Runtime tests confirm no duplicate watering or performance regression.
+## Critérios de aceitação
+- Existe uma matriz de testes para os tipos de localidades.
+- Localidades suportadas são processadas uma única vez; localidades excluídas são ignoradas de maneira intencional e consistente.
+- Testes durante a execução confirmam que não há rega duplicada nem regressão de desempenho.

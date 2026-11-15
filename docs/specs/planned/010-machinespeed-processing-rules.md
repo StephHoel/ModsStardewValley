@@ -1,19 +1,19 @@
-# 010 - Configure Machine Speed: processing rules
+# 010 - Configure Machine Speed: regras de processamento
 
-**Priority:** P1  
-**Area:** Configure Machine Speed
+**Prioridade:** P1  
+**Área:** Configure Machine Speed
 
-## Context
-Processing behavior spans `MachineConfigurator`, `MachineList`, exclusions, `DayUpdate`, incubators, Crystalariums, and Casks. `ProcessCask` may invoke `DayUpdate` repeatedly until quality changes, with a reported upper bound of 100 iterations. These paths need explicit rules and runtime verification.
+## Contexto
+O comportamento de processamento envolve `MachineConfigurator`, `MachineList`, exclusões, `DayUpdate`, chocadeiras, Cristalários e barris de envelhecimento (Casks). `ProcessCask` pode chamar `DayUpdate` repetidamente até que a qualidade mude, com um limite relatado de 100 iterações. Esses fluxos precisam de regras explícitas e verificação durante a execução do jogo.
 
-## Requirements
-- Document the source of truth for machine speed and the precedence of configuration rules.
-- Define exclusions and special handling for incubators, Crystalariums, and Casks.
-- Bound loops and guarantee termination without skipping valid progression.
-- Use stable qualified item IDs; provide a safe migration/fallback for legacy or localized names.
-- Ensure daily processing does not run twice or violate game progression semantics.
+## Requisitos
+- Documentar a fonte de verdade da velocidade das máquinas e a precedência das regras de configuração.
+- Definir exclusões e tratamentos especiais para chocadeiras, Cristalários e barris de envelhecimento.
+- Limitar os loops e garantir sua terminação sem interromper progressões válidas.
+- Utilizar IDs qualificados e estáveis para os itens; oferecer migração ou fallback seguro para nomes legados ou localizados.
+- Garantir que o processamento diário não seja executado duas vezes nem viole as regras de progressão do jogo.
 
-## Acceptance criteria
-- Each special machine category has documented expected behavior and tests.
-- Boundary cases and loop termination are covered.
-- Runtime tests confirm no duplicated output, skipped stages, or save corruption.
+## Critérios de aceitação
+- Cada categoria de máquina especial possui comportamento esperado documentado e testado.
+- Casos extremos e término dos loops são cobertos por testes.
+- Testes durante a execução confirmam que não há produtos duplicados, etapas ignoradas ou corrupção dos arquivos de salvamento.

@@ -1,18 +1,18 @@
-# 011 - Utils: public location API compatibility
+# 011 - Utils: compatibilidade com a API pública de localidades
 
-**Priority:** P1  
-**Area:** Utils
+**Prioridade:** P1  
+**Área:** Utils
 
-## Context
-`Utils/Locations.cs` appears to reference an internal SMAPI namespace: `StardewModdingAPI.Framework.ModLoading.Rewriters.StardewValley_1_6`. Internal APIs are not stable contracts.
+## Contexto
+O arquivo `Utils/Locations.cs` aparentemente referencia um namespace interno do SMAPI: `StardewModdingAPI.Framework.ModLoading.Rewriters.StardewValley_1_6`. APIs internas não são contratos estáveis.
 
-## Requirements
-- Replace internal SMAPI implementation references with supported public Stardew Valley/SMAPI APIs.
-- Preserve the intended enumeration of farm, interior, and custom locations.
-- Document behavior for unloaded locations and duplicate references.
-- Keep consumers source-compatible where practical or document any required migration.
+## Requisitos
+- Substituir referências à implementação interna do SMAPI por APIs públicas e suportadas de Stardew Valley e SMAPI.
+- Preservar a enumeração pretendida de localidades da fazenda, interiores e localidades personalizadas.
+- Documentar o comportamento para localidades não carregadas e referências duplicadas.
+- Manter compatibilidade de código-fonte com os consumidores sempre que possível ou documentar qualquer migração necessária.
 
-## Acceptance criteria
-- No dependency on the identified internal namespace remains.
-- Tests cover base-game interiors and custom locations.
-- Build succeeds against the declared supported game/SMAPI versions.
+## Critérios de aceitação
+- Não restam dependências do namespace interno identificado.
+- Testes cobrem interiores do jogo base e localidades personalizadas.
+- A compilação funciona com as versões declaradas como compatíveis de Stardew Valley e SMAPI.

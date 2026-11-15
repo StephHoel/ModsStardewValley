@@ -1,20 +1,20 @@
-# 012 - Solution: portable build and CI
+# 012 - Solução: portabilidade de compilação e CI
 
-**Priority:** P1  
-**Area:** Solution / CI
+**Prioridade:** P1  
+**Área:** Solução / CI
 
-## Context
-`Utils.csproj` appears to contain an absolute Steam installation HintPath. The workflow `.github/workflows/upload.yaml` has been reported to reference a `niam` branch, a potentially nonexistent `src/` archive path, and placeholder release text.
+## Contexto
+O arquivo `Utils.csproj` aparentemente contém um HintPath absoluto para a instalação do jogo via Steam. Também foi relatado que o workflow `.github/workflows/upload.yaml` referencia uma branch `niam`, um caminho de compactação `src/` possivelmente inexistente e textos provisórios de lançamento.
 
-## Requirements
-- Remove machine-specific absolute game paths; use ModBuildConfig or a documented configurable game path.
-- Add CI validation for pull requests and pushes: restore, build, and relevant tests.
-- Separate validation from release/upload automation; release jobs should run only on explicit release triggers.
-- Package each mod from its actual project output and validate required manifest files.
-- Replace placeholders with project-specific metadata and fail clearly on missing configuration.
+## Requisitos
+- Remover caminhos absolutos específicos de uma máquina; utilizar ModBuildConfig ou um caminho configurável para a instalação do jogo.
+- Adicionar validações de CI para pull requests e pushes: restauração de dependências, compilação e testes relevantes.
+- Separar validação da automação de publicação/envio; tarefas de lançamento devem executar somente mediante gatilhos explícitos.
+- Gerar um pacote para cada mod a partir da saída real do respectivo projeto e validar os arquivos de manifesto necessários.
+- Substituir textos provisórios por metadados específicos do projeto e falhar com mensagens claras quando faltar configuração.
 
-## Acceptance criteria
-- A clean checkout builds in CI without a developer-specific Steam path.
-- CI validates all supported projects.
-- Release archives contain the intended mod files and no unrelated source tree.
-- No placeholder values remain in active release automation.
+## Critérios de aceitação
+- Um clone limpo compila no CI sem depender do caminho Steam de uma máquina específica.
+- O CI valida todos os projetos suportados.
+- Os arquivos de lançamento contêm os arquivos pretendidos do mod, sem incluir diretórios de código-fonte não relacionados.
+- Não há valores provisórios nos workflows ativos de publicação.
