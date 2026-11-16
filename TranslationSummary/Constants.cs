@@ -42,9 +42,15 @@ This repository contains my mods for [Stardew Valley for PC](http://stardewvalle
 * [AutoWater SDV1.6](AutoWater) ([Nexus](https://www.nexusmods.com/stardewvalley/mods/21022))
 * [Configure Machine Speed SDV1.6](ConfigureMachineSpeed) ([Nexus](https://www.nexusmods.com/stardewvalley/mods/21005))
 
+**Current versions:** AddMoney 1.3.0; AutoWater 1.4.2; Configure Machine Speed 2.1.3.
+
+**Compatibility:** All three mods target Stardew Valley 1.6.x and require SMAPI 4.2.0 or later. Generic Mod Config Menu is optional.
+
 **AddMoney default:** press G to add 100,000 gold. The amount and key can be changed in the config file or Generic Mod Config Menu.
 
-**AutoWater requirements:** Stardew Valley 1.6.x and SMAPI 4.2.0 or later. Generic Mod Config Menu is optional.
+**AutoWater:** waters supported crops and garden pots daily, including loaded building interiors. A configurable key toggles the mod; only the host runs watering in multiplayer.
+
+**Configure Machine Speed:** adjusts supported machine processing times. Configured times are at least 10 minutes and never exceed the machine's original processing time. Casks and DayUpdate-dependent machines have dedicated behavior.
 
 This codes are based on:
 
