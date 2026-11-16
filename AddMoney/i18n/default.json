@@ -1,5 +1,7 @@
 {
   "message": "g added!",
+  "InvalidAmount": "The configured amount must be greater than zero. No money was added.",
+  "BalanceLimitReached": "Your wallet has reached the maximum supported balance. No money was added.",
 
   "ConfigTitleGeneralOptions": "Config Add Money",
   "ConfigButtonAddToMoneyKeyName": "Button to Add Money",
