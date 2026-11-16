@@ -1,5 +1,7 @@
 {
   "message": "g añadido!",
+  "InvalidAmount": "La cantidad configurada debe ser mayor que cero. No se ha añadido dinero.",
+  "BalanceLimitReached": "Tu cartera ha alcanzado el saldo máximo admitido. No se ha añadido dinero.",
   "ConfigTitleGeneralOptions": "Configurar Añadir Dinero",
   "ConfigButtonAddToMoneyKeyName": "Tecla para Añadir Dinero",
   "ConfigGoldAddName": "¿Cuánto oro añadir?"
