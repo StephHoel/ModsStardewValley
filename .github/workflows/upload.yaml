@@ -1,26 +1,87 @@
-name: Upload Mod to NexusMods
+name: Publicar mod no Nexus Mods
 
 on:
-  push:
-    branches: [niam]
+  workflow_dispatch:
+    inputs:
+      mod:
+        description: Mod que será publicado
+        required: true
+        type: choice
+        options:
+          - AddMoney
+          - AutoWater
+          - ConfigureMachineSpeed
+      version:
+        description: Versão a publicar
+        required: true
+        type: string
+      display_name:
+        description: Nome exibido no Nexus Mods
+        required: true
+        type: string
+      description:
+        description: Descrição desta publicação
+        required: true
+        type: string
 
 jobs:
   upload-to-nexusmods:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, windows, stardew-valley]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Baixar repositório
+        uses: actions/checkout@v4
 
-      - name: Zip mod files # Talvez não precise para meus mods
-        run: zip -r mod.zip src/
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
 
-      - name: Upload mod to NexusMods
-        id: upload
+      - name: Validar configuração de publicação
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace("${{ secrets.NEXUSMODS_API_KEY }}")) {
+            throw "O segredo NEXUSMODS_API_KEY não está configurado."
+          }
+          if ([string]::IsNullOrWhiteSpace("${{ vars.NEXUSMODS_FILE_GROUP_ID }}")) {
+            throw "A variável NEXUSMODS_FILE_GROUP_ID não está configurada."
+          }
+          if ([string]::IsNullOrWhiteSpace("${{ vars.STARDEW_VALLEY_PATH }}")) {
+            throw "A variável STARDEW_VALLEY_PATH não está configurada."
+          }
+
+      - name: Compilar mod selecionado
+        shell: pwsh
+        run: |
+          $project = switch ("${{ inputs.mod }}") {
+            "AddMoney" { "AddMoney/AddMoney.csproj" }
+            "AutoWater" { "AutoWater/AutoWater.csproj" }
+            "ConfigureMachineSpeed" { "ConfigureMachineSpeed/ConfigureMachineSpeed.csproj" }
+            default { throw "Mod não suportado: ${{ inputs.mod }}" }
+          }
+
+          dotnet restore $project
+          dotnet build $project --configuration Release --no-restore -p:GamePath="${{ vars.STARDEW_VALLEY_PATH }}" -p:EnableModDeploy=false
+
+      - name: Localizar pacote gerado
+        id: package
+        shell: pwsh
+        run: |
+          $package = Get-ChildItem "_releases" -Filter "${{ inputs.mod }}*.zip" -File |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+
+          if ($null -eq $package) {
+            throw "Nenhum pacote ZIP de ${{ inputs.mod }} foi encontrado em _releases."
+          }
+
+          "file=$($package.FullName)" >> $env:GITHUB_OUTPUT
+
+      - name: Enviar pacote ao Nexus Mods
         uses: Nexus-Mods/upload-action@main
         with:
           api_key: ${{ secrets.NEXUSMODS_API_KEY }}
           file_group_id: ${{ vars.NEXUSMODS_FILE_GROUP_ID }}
-          filename: mod.zip
-          display_name: "My Amazing Mod"
-          description: "Test description"
-          version: ${{ github.event.release.tag_name || github.event.inputs.version }}
+          filename: ${{ steps.package.outputs.file }}
+          display_name: ${{ inputs.display_name }}
+          description: ${{ inputs.description }}
+          version: ${{ inputs.version }}
