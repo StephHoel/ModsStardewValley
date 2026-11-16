@@ -35,12 +35,7 @@ public class OnButtonPressed(Func<ModConfig> getConfig, IMonitor monitor)
             return;
         }
 
-        // Money is stored as an Int32 by the game. Calculate the remaining capacity
-        // using Int64 so the subtraction and comparison cannot overflow.
-        var remainingCapacity = (long)int.MaxValue - player.Money;
-        var actualGold = (int)Math.Min(requestedGold, Math.Max(0L, remainingCapacity));
-
-        if (actualGold == 0)
+        if (!MoneyMath.TryCalculateAddition(player.Money, requestedGold, out var actualGold))
         {
             Game1.addHUDMessage(new HUDMessage(I18n.BalanceLimitReached(), HUDMessage.error_type));
             monitor.Log($"{player.Name}'s balance is already at the supported limit.", LogLevel.Warn);
