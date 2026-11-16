@@ -44,6 +44,8 @@ This repository contains my mods for [Stardew Valley for PC](http://stardewvalle
 
 **AddMoney default:** press G to add 100,000 gold. The amount and key can be changed in the config file or Generic Mod Config Menu.
 
+**AutoWater requirements:** Stardew Valley 1.6.x and SMAPI 4.2.0 or later. Generic Mod Config Menu is optional.
+
 This codes are based on:
 
 * AddMoney by [Pempi](https://www.nexusmods.com/stardewvalley/mods/20111)
