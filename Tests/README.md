@@ -8,7 +8,14 @@ Execute os testes com:
 dotnet test Tests/TranslationSummary.Tests.csproj --configuration Release
 ```
 
-O projeto cobre o comportamento determinístico do relatório de traduções: resolução de status ausentes, coleta de avisos e geração do Markdown. A validação de sintaxe dos arquivos JSON e dos campos obrigatórios dos manifestos é executada pelo workflow de CI.
+A suíte cobre:
+- cálculo seguro do valor a adicionar à carteira, incluindo valores inválidos e limite de Int32;
+- normalização e arredondamento dos tempos das máquinas, inclusive valores extremos;
+- precedência de IDs qualificados e fallback para nomes legados;
+- resolução de status, coleta de avisos e geração de relatórios de tradução;
+- JSON inválido, chaves ausentes/adicionais, tokens divergentes e ordenação determinística.
+
+As regras puras de domínio são vinculadas diretamente ao projeto de testes para não exigir a instalação do jogo. A validação dos arquivos JSON e dos manifestos é executada pelo workflow de CI.
 
 ## Verificações manuais dentro do jogo
 
@@ -35,8 +42,8 @@ Os cenários abaixo dependem do runtime de Stardew Valley/SMAPI e devem ser exec
 - Repetir os cenários em multiplayer como anfitrião e como farmhand.
 
 ### Compatibilidade e publicação
-- Compilar a solução em uma instalação limpa com Stardew Valley detectado automaticamente ou com `STARDEW_VALLEY_PATH` configurado.
-- Conferir os ZIPs gerados em `_releases` e verificar se cada pacote contém somente os arquivos do mod correspondente.
+- Compilar a solução em uma instalação limpa com Stardew Valley detectado automaticamente ou com STARDEW_VALLEY_PATH configurado.
+- Conferir os ZIPs gerados em _releases e verificar se cada pacote contém somente os arquivos do mod correspondente.
 - Executar o workflow de publicação manual somente após revisar versão, nome e descrição enviados ao Nexus Mods.
 
 ## Limites conhecidos
