@@ -89,17 +89,7 @@ public static class MachineConfigurator
         Object obj,
         out MachineConfig cfg)
     {
-        // Qualified IDs are authoritative. Legacy internal names are a fallback
-        // only for old configuration entries which haven't been migrated yet.
-        if (!string.IsNullOrWhiteSpace(obj.QualifiedItemId)
-            && cfgById.TryGetValue(obj.QualifiedItemId, out cfg!))
-            return true;
-
-        if (cfgByLegacyName.TryGetValue(obj.name, out cfg!))
-            return true;
-
-        cfg = null!;
-        return false;
+        return MachineConfigResolver.TryResolve(cfgById, cfgByLegacyName, obj.QualifiedItemId, obj.name, out cfg);
     }
 
     private static void ConfigureMachine(this Object obj, MachineConfig cfg)
