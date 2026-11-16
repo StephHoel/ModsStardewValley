@@ -1,5 +1,7 @@
 {
     "Title": "Auto Water",
     "ConfigButton": "Button to toggle",
-    "ConfigToggle": "Activate?"
+    "ConfigToggle": "Activate?",
+    "Enabled": "AutoWater enabled.",
+    "Disabled": "AutoWater disabled."
 }
