@@ -1,4 +1,4 @@
-﻿using StardewModdingAPI;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Machines;
 
@@ -15,8 +15,6 @@ public static class Machines
             return machineId;
 
         var itemData = ItemRegistry.GetData(machineId);
-
-        // monitor?.Log($"[GetTranslation] MachineId={machineId} DisplayName={itemData?.DisplayName} InternalName={itemData?.InternalName}", LogLevel.Debug);
 
         if (!string.IsNullOrWhiteSpace(itemData?.DisplayName))
             return itemData.DisplayName;
@@ -37,16 +35,22 @@ public static class Machines
             .ToArray();
     }
 
-    public static List<MachineConfig> MachinesList
-        => GetMachines();
+    public static List<MachineConfig> MachinesList => GetMachines();
 
     public static MachineConfig[] GetMachines(IEnumerable<MachineConfig>? machineIds = null)
     {
         machineIds ??= [];
         var source = machineIds.ToList();
         source.AddRange(MachinesList);
-        source = source.GroupBy(m => m.Id).Select(g => g.First()).ToList();
-        return [.. source];
+
+        // Keep unresolved legacy entries separate until NormalizeMachineConfig
+        // has a chance to migrate each one by its saved name.
+        var identified = source.Where(m => !string.IsNullOrWhiteSpace(m.Id))
+            .GroupBy(m => m.Id, StringComparer.Ordinal)
+            .Select(g => g.First());
+        var legacy = source.Where(m => string.IsNullOrWhiteSpace(m.Id));
+
+        return [.. identified.Concat(legacy)];
     }
 
     public static bool TryResolveLegacyNameToId(string legacyName, out string? machineId)
@@ -66,24 +70,21 @@ public static class Machines
             return CachedMachines;
 
         var machines = new HashSet<MachineConfig>();
-
         var machineData = Game1.content.Load<Dictionary<string, MachineData>>("Data/Machines");
         foreach (var machineId in machineData.Keys)
             machines.Add(new MachineConfig(machineId));
 
-
-
         CachedMachines = machines.GroupBy(m => m.Id)
-                                 .Select(g => g.First())
-                                 .OrderBy(m => m.Id, StringComparer.OrdinalIgnoreCase)
-                                 .ToList();
+            .Select(g => g.First())
+            .OrderBy(m => m.Id, StringComparer.OrdinalIgnoreCase)
+            .ToList();
 
         return CachedMachines;
     }
 
     private static Dictionary<string, string> BuildLegacyNameToIdMap()
     {
-        var map = new Dictionary<string, string>(StringComparer.Ordinal);
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var machineData = Game1.content.Load<Dictionary<string, MachineData>>("Data/Machines");
 
         foreach (var machineId in machineData.Keys)
@@ -102,10 +103,6 @@ public static class Machines
     public static string? GetIdByMachineName(string machineName)
     {
         var map = BuildLegacyNameToIdMap();
-
-        if (map.TryGetValue(machineName, out var id))
-            return id;
-
-        return null;
+        return map.TryGetValue(machineName, out var id) ? id : null;
     }
 }
