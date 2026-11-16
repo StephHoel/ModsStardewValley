@@ -9,6 +9,7 @@ public class ModEntry : Mod
 {
     internal static ModEntry? Instance;
     private static bool patchesApplied;
+    private bool configMenuRegistered;
 
     public override void Entry(IModHelper helper)
     {
@@ -32,17 +33,19 @@ public class ModEntry : Mod
             }
         }
 
-        helper.Events.Display.RenderedActiveMenu += (_, _)
-            => GenericModConfigMenu.Register(ModManifest, helper, Monitor);
-
-        helper.Events.Content.LocaleChanged += (_, _)
-            => GenericModConfigMenu.Register(ModManifest, helper, Monitor);
-
         helper.Events.GameLoop.GameLaunched += (_, _) =>
         {
             var config = helper.ReadConfig<ModConfig>();
             config.NormalizeMachineConfig(Monitor);
             helper.WriteConfig(config);
+
+            // GMCM is optional. Register once at the lifecycle event intended
+            // for API integration, rather than on every rendered menu frame.
+            if (configMenuRegistered)
+                return;
+
+            GenericModConfigMenu.Register(ModManifest, helper, Monitor);
+            configMenuRegistered = true;
         };
 
         helper.Events.GameLoop.DayStarted += (_, _) =>
