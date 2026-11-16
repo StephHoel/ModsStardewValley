@@ -1,5 +1,7 @@
 {
-    "Title": "自動水やり",
-    "ConfigButton": "MODの切り替えキー",
-    "ConfigToggle": "有効化しますか？"
+  "Title": "自動水やり",
+  "ConfigButton": "MODの切り替えキー",
+  "ConfigToggle": "有効化しますか？",
+  "Enabled": "自動水やりを有効にしました。",
+  "Disabled": "自動水やりを無効にしました。"
 }
