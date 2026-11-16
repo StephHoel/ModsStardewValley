@@ -1,5 +1,7 @@
 {
-    "Title": "Automatikus öntözés",
-    "ConfigButton": "Gomb ki-/bekapcsolásához",
-    "ConfigToggle": "Bekapcsolva?"
+  "Title": "Automatikus öntözés",
+  "ConfigButton": "Gomb ki-/bekapcsolásához",
+  "ConfigToggle": "Bekapcsolva?",
+  "Enabled": "Automatikus öntözés bekapcsolva.",
+  "Disabled": "Automatikus öntözés kikapcsolva."
 }
