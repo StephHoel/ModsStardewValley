@@ -2,7 +2,7 @@
   "Name": "Add Money",
   "Author": "Steph Hoel",
   "Version": "%ProjectVersion%",
-  "Description": "A mod for add money",
+  "Description": "Adds 100,000 gold when the configured key is pressed. The amount and key can be changed in the config or Generic Mod Config Menu.",
   "UniqueID": "StephHoel.AddMoney",
   "EntryDll": "AddMoney.dll",
   "MinimumApiVersion": "4.2.0",
