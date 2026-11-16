@@ -1,5 +1,7 @@
 {
   "message": "g добавлено!",
+  "InvalidAmount": "Заданная сумма должна быть больше нуля. Деньги не добавлены.",
+  "BalanceLimitReached": "Достигнут максимально поддерживаемый баланс кошелька. Деньги не добавлены.",
   "ConfigTitleGeneralOptions": "Настройки добавления денег",
   "ConfigButtonAddToMoneyKeyName": "Кнопка для добавления денег",
   "ConfigGoldAddName": "Сколько золота добавить"

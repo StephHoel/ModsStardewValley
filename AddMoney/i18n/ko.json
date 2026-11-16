@@ -1,5 +1,7 @@
 {
   "message": "g 추가됨!",
+  "InvalidAmount": "설정된 금액은 0보다 커야 합니다. 돈이 추가되지 않았습니다.",
+  "BalanceLimitReached": "지갑이 지원되는 최대 잔액에 도달했습니다. 돈이 추가되지 않았습니다.",
   "ConfigTitleGeneralOptions": "돈 추가 설정",
   "ConfigButtonAddToMoneyKeyName": "돈 추가 키",
   "ConfigGoldAddName": "얼마나 골드를 추가할까요?"

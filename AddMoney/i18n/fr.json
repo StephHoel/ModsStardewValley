@@ -1,5 +1,7 @@
 {
   "message": "g ajouté !",
+  "InvalidAmount": "Le montant configuré doit être supérieur à zéro. Aucun argent n’a été ajouté.",
+  "BalanceLimitReached": "Votre portefeuille a atteint le solde maximal pris en charge. Aucun argent n’a été ajouté.",
   "ConfigTitleGeneralOptions": "Configurer l'ajout d'argent",
   "ConfigButtonAddToMoneyKeyName": "Touche pour ajouter de l'argent",
   "ConfigGoldAddName": "Combien d'or ajouter"

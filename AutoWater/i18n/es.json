@@ -1,5 +1,7 @@
 {
-    "Title": "Riego automático",
-    "ConfigButton": "Tecla para activar/desactivar",
-    "ConfigToggle": "¿Activar?"
+  "Title": "Riego automático",
+  "ConfigButton": "Tecla para activar/desactivar",
+  "ConfigToggle": "¿Activar?",
+  "Enabled": "Riego automático activado.",
+  "Disabled": "Riego automático desactivado."
 }

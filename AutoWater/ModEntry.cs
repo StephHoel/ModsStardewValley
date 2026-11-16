@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Objects;
@@ -10,34 +11,71 @@ namespace StephHoel.AutoWater;
 
 public class ModEntry : Mod
 {
+    private ModConfig Config = new();
+
     public override void Entry(IModHelper helper)
     {
         I18n.Init(helper.Translation);
         FileUtils.RemoveObsoleteFiles(helper, Monitor);
+        Config = helper.ReadConfig<ModConfig>();
 
         helper.Events.GameLoop.GameLaunched += (_, _) =>
         {
-            GMCM.Register(helper, ModManifest);
+            GMCM.Register(helper, ModManifest, () => Config, config => Config = config);
         };
+
+        helper.Events.Input.ButtonPressed += OnButtonPressed;
 
         helper.Events.GameLoop.DayStarted += (_, _) =>
         {
             // Avoid running twice in multiplayer.
-            if (!Context.IsMainPlayer) return;
-
-            if (!helper.ReadConfig<ModConfig>().IsActive) return;
+            if (!Context.IsMainPlayer || !Config.IsActive) return;
 
             WaterAllLocations();
             WaterPetBowl();
         };
     }
 
-    private static void WaterAllLocations()
+    private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        foreach (var location in Game1.locations)
+        if (!Context.IsWorldReady || !Context.IsMainPlayer || Game1.eventUp)
+            return;
+
+        // Do not steal the configured key while the player is interacting with a
+        // menu or entering text in the chat box.
+        if (Game1.activeClickableMenu is not null || Game1.chatBox?.isActive() == true)
+            return;
+
+        if (e.Button != Config.Toggle)
+            return;
+
+        Config.IsActive = !Config.IsActive;
+        Helper.WriteConfig(Config);
+
+        var message = Config.IsActive ? I18n.Enabled() : I18n.Disabled();
+        Game1.addHUDMessage(new HUDMessage(message, 2));
+        Monitor.Log($"AutoWater {(Config.IsActive ? "enabled" : "disabled")} using {e.Button}.", LogLevel.Debug);
+    }
+
+    private void WaterAllLocations()
+    {
+        // Include interiors exposed by the shared location helper, not only the
+        // top-level world locations. Distinct prevents the same instance from
+        // being watered twice when it is reachable through multiple collections.
+        foreach (var location in Locations.GetLocations().Distinct())
         {
-            WaterGardenPots(location);
-            WaterHoeDirts(location);
+            if (location is null)
+                continue;
+
+            try
+            {
+                WaterGardenPots(location);
+                WaterHoeDirts(location);
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Skipped location '{location.NameOrUniqueName}' because watering failed: {ex.Message}", LogLevel.Warn);
+            }
         }
     }
 
