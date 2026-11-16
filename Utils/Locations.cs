@@ -1,11 +1,10 @@
 using StardewValley;
-using StardewValley.Locations;
 
 namespace Utils;
 
 /// <summary>
-/// Enumerates loaded world locations and the loaded interiors of buildable
-/// locations using public Stardew Valley APIs.
+/// Enumerates loaded world locations and their loaded, instanced building
+/// interiors using the public Stardew Valley 1.6 API.
 /// </summary>
 public static class Locations
 {
@@ -20,12 +19,11 @@ public static class Locations
 
             yield return location;
 
-            if (location is not BuildableGameLocation buildableLocation)
-                continue;
-
-            foreach (var building in buildableLocation.buildings)
+            // Non-instanced interiors (such as the farmhouse and greenhouse)
+            // are already in Game1.locations. This API returns interiors which
+            // belong to a building instance and aren't listed there separately.
+            foreach (var interior in location.GetInstancedBuildingInteriors())
             {
-                var interior = building.indoors.Value;
                 if (interior is null || !visited.Add(interior))
                     continue;
 
