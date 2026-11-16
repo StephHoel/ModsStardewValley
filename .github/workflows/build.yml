@@ -1,0 +1,80 @@
+name: Validar compilação e metadados
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  validate-tools-and-metadata:
+    name: Validar ferramenta e arquivos JSON
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restaurar ferramenta de traduções
+        run: dotnet restore TranslationSummary/TranslationSummary.csproj
+
+      - name: Compilar ferramenta de traduções
+        run: dotnet build TranslationSummary/TranslationSummary.csproj --configuration Release --no-restore
+
+      - name: Validar JSONs e manifestos
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+
+          root = Path(".")
+          errors = []
+
+          for path in sorted(root.glob("*/i18n/*.json")):
+              try:
+                  with path.open(encoding="utf-8-sig") as file:
+                      data = json.load(file)
+                  if not isinstance(data, dict):
+                      errors.append(f"{path}: a raiz precisa ser um objeto JSON")
+              except Exception as error:
+                  errors.append(f"{path}: {error}")
+
+          required_manifest_fields = ("Name", "Version", "UniqueID", "EntryDll", "MinimumApiVersion")
+          for path in sorted(root.glob("*/manifest.json")):
+              try:
+                  with path.open(encoding="utf-8-sig") as file:
+                      manifest = json.load(file)
+                  for field in required_manifest_fields:
+                      if not manifest.get(field):
+                          errors.append(f"{path}: campo obrigatório ausente ou vazio: {field}")
+              except Exception as error:
+                  errors.append(f"{path}: {error}")
+
+          if errors:
+              print("\n".join(errors))
+              raise SystemExit(1)
+
+          print("Arquivos JSON e manifestos válidos.")
+
+  build-mods:
+    name: Compilar mods com instalação do jogo
+    if: ${{ vars.STARDEW_VALLEY_PATH != '' }}
+    runs-on: [self-hosted, windows, stardew-valley]
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restaurar solução
+        run: dotnet restore ModsStardewValley.sln
+
+      - name: Compilar solução
+        run: dotnet build ModsStardewValley.sln --configuration Release --no-restore -p:GamePath="${{ vars.STARDEW_VALLEY_PATH }}" -p:EnableModDeploy=false
