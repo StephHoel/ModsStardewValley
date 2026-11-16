@@ -1,5 +1,7 @@
 {
   "message": "g hinzugefügt!",
+  "InvalidAmount": "Der konfigurierte Betrag muss größer als null sein. Es wurde kein Geld hinzugefügt.",
+  "BalanceLimitReached": "Dein Geldbeutel hat den maximal unterstützten Kontostand erreicht. Es wurde kein Geld hinzugefügt.",
   "ConfigTitleGeneralOptions": "Geld hinzufügen konfigurieren",
   "ConfigButtonAddToMoneyKeyName": "Taste zum Geld hinzufügen",
   "ConfigGoldAddName": "Wie viel Gold hinzufügen"
