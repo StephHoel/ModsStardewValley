@@ -42,6 +42,10 @@ This repository contains my mods for [Stardew Valley for PC](http://stardewvalle
 * [AutoWater SDV1.6](AutoWater) ([Nexus](https://www.nexusmods.com/stardewvalley/mods/21022))
 * [Configure Machine Speed SDV1.6](ConfigureMachineSpeed) ([Nexus](https://www.nexusmods.com/stardewvalley/mods/21005))
 
+**AddMoney default:** press G to add 100,000 gold. The amount and key can be changed in the config file or Generic Mod Config Menu.
+
+**AutoWater requirements:** Stardew Valley 1.6.x and SMAPI 4.2.0 or later. Generic Mod Config Menu is optional.
+
 This codes are based on:
 
 * AddMoney by [Pempi](https://www.nexusmods.com/stardewvalley/mods/20111)
