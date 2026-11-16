@@ -8,7 +8,7 @@ on:
 
 jobs:
   validate-tools-and-metadata:
-    name: Validar ferramenta e arquivos JSON
+    name: Validar ferramenta, testes e arquivos JSON
     runs-on: ubuntu-latest
     steps:
       - name: Baixar repositório
@@ -24,6 +24,9 @@ jobs:
 
       - name: Compilar ferramenta de traduções
         run: dotnet build TranslationSummary/TranslationSummary.csproj --configuration Release --no-restore
+
+      - name: Executar testes automatizados
+        run: dotnet test Tests/TranslationSummary.Tests.csproj --configuration Release
 
       - name: Validar JSONs e manifestos
         shell: bash
