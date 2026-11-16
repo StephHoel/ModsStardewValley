@@ -52,14 +52,10 @@ public static class TranslationValidator
                     var translationKeys = translations.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
                     foreach (var missingKey in defaultKeys.Except(translationKeys, StringComparer.OrdinalIgnoreCase).OrderBy(key => key, StringComparer.OrdinalIgnoreCase))
-                    {
                         AddIssue(folder, issues, relativePath, $"Chave ausente na tradução: '{missingKey}'.");
-                    }
 
                     foreach (var obsoleteKey in translationKeys.Except(defaultKeys, StringComparer.OrdinalIgnoreCase).OrderBy(key => key, StringComparer.OrdinalIgnoreCase))
-                    {
                         AddIssue(folder, issues, relativePath, $"Chave adicional/obsoleta na tradução: '{obsoleteKey}'.");
-                    }
 
                     foreach (var key in defaultKeys.Intersect(translationKeys, StringComparer.OrdinalIgnoreCase).OrderBy(key => key, StringComparer.OrdinalIgnoreCase))
                     {
@@ -79,9 +75,7 @@ public static class TranslationValidator
 
                     var fileContent = File.ReadAllText(translationFile.FullName);
                     if (TodoMarkerPattern.IsMatch(fileContent))
-                    {
                         AddIssue(folder, issues, relativePath, "Marcador TODO encontrado; tradução ainda requer revisão.", isError: false);
-                    }
                 }
             }
         }
@@ -136,6 +130,7 @@ public static class TranslationValidator
     private static string[] GetFormattingTokens(string value)
     {
         return FormattingTokenPattern.Matches(value)
+            .Cast<Match>()
             .Select(match => match.Value)
             .OrderBy(token => token, StringComparer.Ordinal)
             .ToArray();
