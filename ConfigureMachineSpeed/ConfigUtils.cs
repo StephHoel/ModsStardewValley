@@ -45,13 +45,15 @@ public static class ConfigUtils
 
     public static int RoundedTime(int value)
     {
-        int remainder = Math.Abs(value) % 10;
-        int rounded = value - (value >= 0 ? remainder : -remainder);
+        // Use Int64 to safely handle int.MinValue from a manually edited config.
+        var longValue = (long)value;
+        var remainder = (int)(Math.Abs(longValue) % 10);
+        var rounded = longValue - (longValue >= 0 ? remainder : -remainder);
 
         if (remainder >= 5)
-            rounded += value >= 0 ? 10 : -10;
+            rounded += longValue >= 0 ? 10 : -10;
 
-        return Math.Max(10, rounded);
+        return (int)Math.Clamp(rounded, 10L, int.MaxValue);
     }
 
     public static int CalculateTarget(this MachineConfig cfg, int original)
