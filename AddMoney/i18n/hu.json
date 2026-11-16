@@ -1,5 +1,7 @@
 {
   "message": "g hozzáadva!",
+  "InvalidAmount": "A beállított összegnek nullánál nagyobbnak kell lennie. Nem adtunk hozzá pénzt.",
+  "BalanceLimitReached": "A pénztárcád elérte a támogatott maximális egyenleget. Nem adtunk hozzá pénzt.",
   "ConfigTitleGeneralOptions": "Pénz hozzáadása beállítások",
   "ConfigButtonAddToMoneyKeyName": "Gomb pénz hozzáadásához",
   "ConfigGoldAddName": "Mennyi aranyat adjunk hozzá?"

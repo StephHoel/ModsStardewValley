@@ -1,5 +1,7 @@
 {
   "message": "g 添加成功！",
+  "InvalidAmount": "配置的金额必须大于零。未添加金钱。",
+  "BalanceLimitReached": "你的钱包已达到支持的最高余额。未添加金钱。",
   "ConfigTitleGeneralOptions": "添加金钱设置",
   "ConfigButtonAddToMoneyKeyName": "添加金钱的按键",
   "ConfigGoldAddName": "添加多少金币"

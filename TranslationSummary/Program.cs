@@ -1,38 +1,69 @@
-﻿using System.Text;
+using System.Text;
 
 namespace TranslationSummary;
 
 public static class Program
 {
-    public static void Main()
+    public static int Main(string[] args)
     {
-        var solutionFolder = "../../../../";
+        var checkOnly = args.Contains("--check", StringComparer.OrdinalIgnoreCase);
+        var solutionPath = args.FirstOrDefault(arg => !arg.StartsWith("--", StringComparison.Ordinal)) ?? "../../../../";
 
-        // Buscar mods
-        var modFolders = ModScanner.GetModFolders(solutionFolder, Constants.RenameMods);
+        try
+        {
+            var solutionFolder = Path.GetFullPath(solutionPath);
+            if (!Directory.Exists(solutionFolder))
+            {
+                Console.Error.WriteLine($"Tool error: diretório do repositório não encontrado: {solutionFolder}");
+                return 2;
+            }
 
-        // Analisar traduções
-        ModScanner.PopulateTranslationStatus(modFolders, Constants.Languages);
+            var modFolders = ModScanner.GetModFolders(solutionFolder, Constants.RenameMods);
+            var issues = TranslationValidator.Validate(modFolders);
 
-        // Coletar warnings
-        var warnings = WarningCollector.Collect(modFolders);
+            foreach (var issue in issues)
+                Console.Error.WriteLine(issue);
 
-        // Gerar markdown
-        var markdown = new StringBuilder();
-        markdown.AppendLine(Constants.InitReadme.Trim() + "\n");
+            if (issues.Any(issue => issue.IsError))
+            {
+                Console.Error.WriteLine($"Validação reprovada: {issues.Count(issue => issue.IsError)} erro(s), {issues.Count(issue => !issue.IsError)} aviso(s).");
+                return 1;
+            }
 
-        if (warnings.Any())
-            markdown.Append(MarkdownGenerator.GenerateWarnings(warnings));
+            if (checkOnly)
+            {
+                if (issues.Count > 0)
+                {
+                    Console.Error.WriteLine($"Validação reprovada: {issues.Count} aviso(s).");
+                    return 1;
+                }
 
-        markdown.Append(MarkdownGenerator.GenerateSummary(modFolders));
+                Console.WriteLine("Validação de traduções concluída sem divergências.");
+                return 0;
+            }
 
-        markdown.AppendLine(Constants.FinalReadme.Trim());
+            ModScanner.PopulateTranslationStatus(modFolders, Constants.Languages);
+            var warnings = WarningCollector.Collect(modFolders);
 
-        // Escrever no README.md
-        var readmePath = Path.GetFullPath(Path.Combine(solutionFolder, "README.md"));
+            var markdown = new StringBuilder();
+            markdown.AppendLine(Constants.InitReadme.Trim() + "\n");
 
-        File.WriteAllText(readmePath, markdown.ToString(), Encoding.UTF8);
+            if (warnings.Any())
+                markdown.Append(MarkdownGenerator.GenerateWarnings(warnings));
 
-        Console.WriteLine($"Resumo de tradução e warnings estão em: {readmePath}");
+            markdown.Append(MarkdownGenerator.GenerateSummary(modFolders));
+            markdown.AppendLine(Constants.FinalReadme.Trim());
+
+            var readmePath = Path.GetFullPath(Path.Combine(solutionFolder, "README.md"));
+            File.WriteAllText(readmePath, markdown.ToString(), Encoding.UTF8);
+
+            Console.WriteLine($"Resumo de tradução e avisos salvos em: {readmePath}");
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Tool error: {ex}");
+            return 2;
+        }
     }
 }

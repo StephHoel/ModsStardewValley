@@ -1,5 +1,7 @@
 {
-    "Title": "Arrosage automatique",
-    "ConfigButton": "Touche pour activer/désactiver",
-    "ConfigToggle": "Activer ?"
+  "Title": "Arrosage automatique",
+  "ConfigButton": "Touche pour activer/désactiver",
+  "ConfigToggle": "Activer ?",
+  "Enabled": "Arrosage automatique activé.",
+  "Disabled": "Arrosage automatique désactivé."
 }

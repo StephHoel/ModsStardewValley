@@ -1,5 +1,7 @@
 {
   "message": "g 追加されました！",
+  "InvalidAmount": "設定金額は0より大きい必要があります。お金は追加されませんでした。",
+  "BalanceLimitReached": "所持金がサポートされる最大額に達しています。お金は追加されませんでした。",
   "ConfigTitleGeneralOptions": "お金追加の設定",
   "ConfigButtonAddToMoneyKeyName": "お金追加のキー",
   "ConfigGoldAddName": "追加するゴールドの量"

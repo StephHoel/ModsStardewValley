@@ -2,7 +2,7 @@
   "Name": "Configure Machine Speed",
   "Author": "Steph Hoel",
   "Version": "%ProjectVersion%",
-  "Description": "Configure the speed of your machines.",
+  "Description": "Configures processing times for supported machines. Requires Stardew Valley 1.6 and SMAPI 4.2.0 or later.",
   "UniqueID": "StephHoel.ConfigureMachineSpeed",
   "EntryDll": "ConfigureMachineSpeed.dll",
   "MinimumApiVersion": "4.2.0",

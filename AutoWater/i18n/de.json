@@ -1,5 +1,7 @@
 {
-    "Title": "Automatisches Bewässern",
-    "ConfigButton": "Taste zum Umschalten",
-    "ConfigToggle": "Aktivieren?"
+  "Title": "Automatisches Bewässern",
+  "ConfigButton": "Taste zum Umschalten",
+  "ConfigToggle": "Aktivieren?",
+  "Enabled": "AutoWater aktiviert.",
+  "Disabled": "AutoWater deaktiviert."
 }

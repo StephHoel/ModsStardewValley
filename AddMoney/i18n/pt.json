@@ -1,5 +1,7 @@
 {
   "message": "g adicionado!",
+  "InvalidAmount": "O valor configurado precisa ser maior que zero. Nenhum dinheiro foi adicionado.",
+  "BalanceLimitReached": "Sua carteira atingiu o limite máximo de saldo suportado. Nenhum dinheiro foi adicionado.",
 
   "ConfigTitleGeneralOptions": "Config para Adicionar Dinheiro",
   "ConfigButtonAddToMoneyKeyName": "Tecla para Adicionar Dinheiro",
