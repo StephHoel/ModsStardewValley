@@ -1,5 +1,7 @@
 {
-    "Title": "Otomatik Sulama",
-    "ConfigButton": "Aç/kapat tuşu",
-    "ConfigToggle": "Etkinleştir?"
+  "Title": "Otomatik Sulama",
+  "ConfigButton": "Aç/kapat tuşu",
+  "ConfigToggle": "Etkinleştir?",
+  "Enabled": "Otomatik sulama etkinleştirildi.",
+  "Disabled": "Otomatik sulama devre dışı bırakıldı."
 }
