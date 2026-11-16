@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+- Rejects zero and negative configured amounts without changing the wallet.
+- Prevents balance overflow and reports the amount actually added when the wallet reaches its supported limit.
+
 ## 1.3.0
 - Refatoração geral.
 - Valor padrão confirmado: 100.000 ouros por pressionamento da tecla G.
