@@ -1,5 +1,7 @@
 {
   "message": "g eklendi!",
+  "InvalidAmount": "Yapılandırılan miktar sıfırdan büyük olmalıdır. Para eklenmedi.",
+  "BalanceLimitReached": "Cüzdanınız desteklenen en yüksek bakiyeye ulaştı. Para eklenmedi.",
   "ConfigTitleGeneralOptions": "Para Ekleme Ayarları",
   "ConfigButtonAddToMoneyKeyName": "Para ekleme tuşu",
   "ConfigGoldAddName": "Ne kadar altın eklensin?"
