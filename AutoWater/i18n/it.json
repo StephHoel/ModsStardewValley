@@ -1,5 +1,7 @@
 {
-    "Title": "Irrigazione automatica",
-    "ConfigButton": "Tasto per attivare/disattivare",
-    "ConfigToggle": "Attivare?"
+  "Title": "Irrigazione automatica",
+  "ConfigButton": "Tasto per attivare/disattivare",
+  "ConfigToggle": "Attivare?",
+  "Enabled": "Irrigazione automatica attivata.",
+  "Disabled": "Irrigazione automatica disattivata."
 }
