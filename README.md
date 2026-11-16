@@ -1,4 +1,4 @@
-﻿# My Stardew Valley Mods
+# My Stardew Valley Mods
 
 This repository contains my mods for [Stardew Valley for PC](http://stardewvalley.net/):
 
@@ -6,7 +6,17 @@ This repository contains my mods for [Stardew Valley for PC](http://stardewvalle
 * [AutoWater SDV1.6](AutoWater) ([Nexus](https://www.nexusmods.com/stardewvalley/mods/21022))
 * [Configure Machine Speed SDV1.6](ConfigureMachineSpeed) ([Nexus](https://www.nexusmods.com/stardewvalley/mods/21005))
 
-This codes are based on:
+**Current versions:** AddMoney 1.3.0; AutoWater 1.4.2; Configure Machine Speed 2.1.3.
+
+**Compatibility:** All three mods target Stardew Valley 1.6.x and require SMAPI 4.2.0 or later. Generic Mod Config Menu is optional.
+
+**AddMoney default:** press G to add 100,000 gold. The amount and key can be changed in the config file or Generic Mod Config Menu.
+
+**AutoWater:** waters supported crops and garden pots daily, including loaded building interiors. A configurable key toggles the mod; only the host runs watering in multiplayer.
+
+**Configure Machine Speed:** adjusts supported machine processing times. Configured times are at least 10 minutes and never exceed the machine's original processing time. Casks and DayUpdate-dependent machines have dedicated behavior.
+
+This code is based on:
 
 * AddMoney by [Pempi](https://www.nexusmods.com/stardewvalley/mods/20111)
 * AutoWater SDV1.6 by [KochiPiccle](https://www.nexusmods.com/stardewvalley/mods/1666)
@@ -40,31 +50,4 @@ Turkish    | [✓](AddMoney/i18n/tr.json) | [✓](AutoWater/i18n/tr.json) | [✓
 
 ## Thanks
 
-Thanks for Pathoschild to help me.
-
-<!-- Para atualizar o repositório local com o remoto e apagar a branch local:
-
-git checkout main
-
-git fetch --prune
-
-git branch -D nome_da_branch
-
----
-
-## MODS
-
-### CMS Feature
-
-* Outras máquinas que envelhecem apenas via DayUpdate identificadas. Lógica própria deve ser testada para cada uma
-
-* Fazer novas fotos (prints) para colocar na página do mod
-
----
-
-### O que foi aplicado na atualização - CMS v2.2.x
-
-* ATUALIZAÇÃO
-
-### Preciso validar em detalhe (antes de publicar)
--->
+Thanks to Pathoschild for the help.
