@@ -1,5 +1,6 @@
 using TranslationSummary;
 using TranslationSummary.Enums;
+using Xunit;
 
 namespace TranslationSummary.Tests;
 
@@ -28,7 +29,7 @@ public class ModFolderTests
         var warned = new ModFolder(new DirectoryInfo("WarnedMod"), "WarnedMod", "Warned Mod");
         warned.Warnings.Add("Chave ausente: title");
 
-        var result = WarningCollector.Collect([clean, warned]).ToArray();
+        var result = WarningCollector.Collect(new[] { clean, warned }).ToArray();
 
         var warning = Assert.Single(result);
         Assert.Equal("Warned Mod", warning.ModName);
@@ -49,7 +50,7 @@ public class MarkdownGeneratorTests
             ["de"] = TranslationStatusEnum.Missing
         };
 
-        var markdown = MarkdownGenerator.GenerateSummary([folder]);
+        var markdown = MarkdownGenerator.GenerateSummary(new[] { folder });
 
         Assert.Contains("Add Money", markdown);
         Assert.Contains("pt.json", markdown);
