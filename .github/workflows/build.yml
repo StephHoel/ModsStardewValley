@@ -17,7 +17,9 @@ jobs:
       - name: Configurar .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: |
+            6.0.x
+            10.0.x
 
       - name: Restaurar ferramenta de traduções
         run: dotnet restore TranslationSummary/TranslationSummary.csproj
@@ -27,6 +29,9 @@ jobs:
 
       - name: Executar testes automatizados
         run: dotnet test Tests/TranslationSummary.Tests.csproj --configuration Release
+
+      - name: Validar traduções e códigos de saída
+        run: dotnet run --project TranslationSummary/TranslationSummary.csproj --configuration Release --no-build -- --check .
 
       - name: Validar JSONs e manifestos
         shell: bash
