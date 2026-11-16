@@ -19,5 +19,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TranslationSummary\TranslationSummary.csproj" />
+    <Compile Include="..\AddMoney\MoneyMath.cs" Link="Production\AddMoney\MoneyMath.cs" />
+    <Compile Include="..\ConfigureMachineSpeed\MachineTimeRules.cs" Link="Production\ConfigureMachineSpeed\MachineTimeRules.cs" />
+    <Compile Include="..\ConfigureMachineSpeed\MachineConfig.cs" Link="Production\ConfigureMachineSpeed\MachineConfig.cs" />
+    <Compile Include="..\ConfigureMachineSpeed\MachineConfigResolver.cs" Link="Production\ConfigureMachineSpeed\MachineConfigResolver.cs" />
   </ItemGroup>
 </Project>
