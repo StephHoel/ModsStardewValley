@@ -1,18 +1,36 @@
-﻿using StardewModdingAPI.Framework.ModLoading.Rewriters.StardewValley_1_6;
 using StardewValley;
-using StardewValley.Buildings;
+using StardewValley.Locations;
 
 namespace Utils;
 
-public class Locations
+/// <summary>
+/// Enumerates loaded world locations and the loaded interiors of buildable
+/// locations using public Stardew Valley APIs.
+/// </summary>
+public static class Locations
 {
     public static IEnumerable<GameLocation> GetLocations()
     {
-        return Game1.locations.Concat(
-            from location in Game1.locations.OfType<BuildableGameLocationFacade>()
-            from building in (IEnumerable<Building>)location.buildings
-            where building.indoors.Value != null
-            select building.indoors.Value
-            );
+        var visited = new HashSet<GameLocation>();
+
+        foreach (var location in Game1.locations)
+        {
+            if (location is null || !visited.Add(location))
+                continue;
+
+            yield return location;
+
+            if (location is not BuildableGameLocation buildableLocation)
+                continue;
+
+            foreach (var building in buildableLocation.buildings)
+            {
+                var interior = building.indoors.Value;
+                if (interior is null || !visited.Add(interior))
+                    continue;
+
+                yield return interior;
+            }
+        }
     }
 }
