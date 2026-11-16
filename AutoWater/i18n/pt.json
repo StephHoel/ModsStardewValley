@@ -1,5 +1,7 @@
 {
     "Title": "Rega Automática",
     "ConfigButton": "Tecla para ativar/desativar",
-    "ConfigToggle": "Ativar?"
+    "ConfigToggle": "Ativar?",
+    "Enabled": "Rega automática ativada.",
+    "Disabled": "Rega automática desativada."
 }
