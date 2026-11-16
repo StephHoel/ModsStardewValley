@@ -5,28 +5,25 @@ using Object = StardewValley.Object;
 
 namespace StephHoel.ConfigureMachineSpeed.Patches;
 
+public readonly record struct CaskActionState(bool WasReady, Object? PreviousHeld);
+
 [HarmonyPatch(typeof(Object), nameof(Object.checkForAction))]
 public static class MachineCollectPatch
 {
-    static bool wasReady;
-    static Object? previousHeld;
-
-    public static void Prefix(Object __instance)
+    public static void Prefix(Object __instance, out CaskActionState __state)
     {
-        if (__instance is Cask cask)
-        {
-            wasReady = cask.readyForHarvest.Value;
-            previousHeld = cask.heldObject.Value;
-        }
+        __state = __instance is Cask cask
+            ? new CaskActionState(cask.readyForHarvest.Value, cask.heldObject.Value)
+            : default;
     }
 
-    public static void Postfix(Object __instance, bool __result)
+    public static void Postfix(Object __instance, bool __result, CaskActionState __state)
     {
         if (__instance is Cask cask
-            && wasReady
+            && __state.WasReady
             && !cask.readyForHarvest.Value
-            && previousHeld != null
-            && cask.heldObject.Value == null)
+            && __state.PreviousHeld is not null
+            && cask.heldObject.Value is null)
         {
             cask.ResetMachine();
         }
