@@ -2,7 +2,7 @@
   "Name": "Add Money",
   "Author": "Steph Hoel",
   "Version": "%ProjectVersion%",
-  "Description": "Adds 100,000 gold when the configured key is pressed. The amount and key can be changed in the config or Generic Mod Config Menu.",
+  "Description": "Adds 100,000 gold when the configured key is pressed. Requires Stardew Valley 1.6 and SMAPI 4.2.0 or later.",
   "UniqueID": "StephHoel.AddMoney",
   "EntryDll": "AddMoney.dll",
   "MinimumApiVersion": "4.2.0",
