@@ -11,14 +11,17 @@ namespace StephHoel.AutoWater;
 
 public class ModEntry : Mod
 {
+    private ModConfig Config = new();
+
     public override void Entry(IModHelper helper)
     {
         I18n.Init(helper.Translation);
         FileUtils.RemoveObsoleteFiles(helper, Monitor);
+        Config = helper.ReadConfig<ModConfig>();
 
         helper.Events.GameLoop.GameLaunched += (_, _) =>
         {
-            GMCM.Register(helper, ModManifest);
+            GMCM.Register(helper, ModManifest, () => Config, config => Config = config);
         };
 
         helper.Events.Input.ButtonPressed += OnButtonPressed;
@@ -26,9 +29,7 @@ public class ModEntry : Mod
         helper.Events.GameLoop.DayStarted += (_, _) =>
         {
             // Avoid running twice in multiplayer.
-            if (!Context.IsMainPlayer) return;
-
-            if (!helper.ReadConfig<ModConfig>().IsActive) return;
+            if (!Context.IsMainPlayer || !Config.IsActive) return;
 
             WaterAllLocations();
             WaterPetBowl();
@@ -45,16 +46,15 @@ public class ModEntry : Mod
         if (Game1.activeClickableMenu is not null || Game1.chatBox?.isActive() == true)
             return;
 
-        var config = Helper.ReadConfig<ModConfig>();
-        if (e.Button != config.Toggle)
+        if (e.Button != Config.Toggle)
             return;
 
-        config.IsActive = !config.IsActive;
-        Helper.WriteConfig(config);
+        Config.IsActive = !Config.IsActive;
+        Helper.WriteConfig(Config);
 
-        var message = config.IsActive ? I18n.Enabled() : I18n.Disabled();
+        var message = Config.IsActive ? I18n.Enabled() : I18n.Disabled();
         Game1.addHUDMessage(new HUDMessage(message, 2));
-        Monitor.Log($"AutoWater {(config.IsActive ? "enabled" : "disabled")} using {e.Button}.", LogLevel.Debug);
+        Monitor.Log($"AutoWater {(Config.IsActive ? "enabled" : "disabled")} using {e.Button}.", LogLevel.Debug);
     }
 
     private static void WaterAllLocations()
