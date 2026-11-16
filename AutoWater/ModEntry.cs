@@ -57,12 +57,25 @@ public class ModEntry : Mod
         Monitor.Log($"AutoWater {(Config.IsActive ? "enabled" : "disabled")} using {e.Button}.", LogLevel.Debug);
     }
 
-    private static void WaterAllLocations()
+    private void WaterAllLocations()
     {
-        foreach (var location in Game1.locations)
+        // Include interiors exposed by the shared location helper, not only the
+        // top-level world locations. Distinct prevents the same instance from
+        // being watered twice when it is reachable through multiple collections.
+        foreach (var location in Locations.GetLocations().Distinct())
         {
-            WaterGardenPots(location);
-            WaterHoeDirts(location);
+            if (location is null)
+                continue;
+
+            try
+            {
+                WaterGardenPots(location);
+                WaterHoeDirts(location);
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Skipped location '{location.NameOrUniqueName}' because watering failed: {ex.Message}", LogLevel.Warn);
+            }
         }
     }
 
