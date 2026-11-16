@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StardewModdingAPI;
 using StardewValley.Objects;
 using StephHoel.ConfigureMachineSpeed.Config;
@@ -13,32 +14,57 @@ public static class MachineConfigurator
     {
         if (!Context.IsMainPlayer) return;
 
-        monitor.Log("[ConfigureAllMachines] Starting machine configuration.", LogLevel.Trace);
-
+        var totalTimer = Stopwatch.StartNew();
+        var indexTimer = Stopwatch.StartNew();
         var (cfgById, cfgByLegacyName) = BuildMachineConfigDictionaries(config);
-        var locations = Locations.GetLocations().Distinct();
+        indexTimer.Stop();
 
-        foreach (var location in locations)
+        var locationsVisited = 0;
+        var objectsScanned = 0;
+        var machinesConfigured = 0;
+
+        foreach (var location in Locations.GetLocations().Distinct())
         {
+            locationsVisited++;
+
             foreach (var obj in location.objects.Values)
             {
-                if (obj is null || !TryGetConfig(cfgById, cfgByLegacyName, obj, out var machineConfig))
+                if (obj is null)
                     continue;
 
+                objectsScanned++;
+                if (!TryGetConfig(cfgById, cfgByLegacyName, obj, out var machineConfig))
+                    continue;
+
+                machinesConfigured++;
                 obj.ConfigureMachine(machineConfig);
             }
         }
+
+        totalTimer.Stop();
+        monitor.Log(
+            $"[ConfigureAllMachines] Locations: {locationsVisited}; objects scanned: {objectsScanned}; machines configured: {machinesConfigured}; " +
+            $"index creation: {indexTimer.Elapsed.TotalMilliseconds:F2} ms; total: {totalTimer.Elapsed.TotalMilliseconds:F2} ms.",
+            LogLevel.Trace
+        );
     }
 
     public static void ConfigureOneMachine(this Object obj, ModConfig config, IMonitor monitor)
     {
         if (!Context.IsMainPlayer) return;
 
-        monitor.Log("[ConfigureOneMachine] Starting single-machine configuration.", LogLevel.Trace);
-
+        var timer = Stopwatch.StartNew();
         var (cfgById, cfgByLegacyName) = BuildMachineConfigDictionaries(config);
-        if (TryGetConfig(cfgById, cfgByLegacyName, obj, out var machineConfig))
+        var configured = TryGetConfig(cfgById, cfgByLegacyName, obj, out var machineConfig);
+
+        if (configured)
             obj.ConfigureMachine(machineConfig);
+
+        timer.Stop();
+        monitor.Log(
+            $"[ConfigureOneMachine] Config entries: {cfgById.Count + cfgByLegacyName.Count}; matched: {configured}; total: {timer.Elapsed.TotalMilliseconds:F2} ms.",
+            LogLevel.Trace
+        );
     }
     #endregion Public Methods
 
