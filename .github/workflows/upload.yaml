@@ -38,19 +38,25 @@ jobs:
 
       - name: Validar configuração de publicação
         shell: pwsh
+        env:
+          NEXUSMODS_API_KEY: ${{ secrets.NEXUSMODS_API_KEY }}
+          NEXUSMODS_FILE_GROUP_ID: ${{ vars.NEXUSMODS_FILE_GROUP_ID }}
+          STARDEW_VALLEY_PATH: ${{ vars.STARDEW_VALLEY_PATH }}
         run: |
-          if ([string]::IsNullOrWhiteSpace("${{ secrets.NEXUSMODS_API_KEY }}")) {
+          if ([string]::IsNullOrWhiteSpace($env:NEXUSMODS_API_KEY)) {
             throw "O segredo NEXUSMODS_API_KEY não está configurado."
           }
-          if ([string]::IsNullOrWhiteSpace("${{ vars.NEXUSMODS_FILE_GROUP_ID }}")) {
+          if ([string]::IsNullOrWhiteSpace($env:NEXUSMODS_FILE_GROUP_ID)) {
             throw "A variável NEXUSMODS_FILE_GROUP_ID não está configurada."
           }
-          if ([string]::IsNullOrWhiteSpace("${{ vars.STARDEW_VALLEY_PATH }}")) {
+          if ([string]::IsNullOrWhiteSpace($env:STARDEW_VALLEY_PATH)) {
             throw "A variável STARDEW_VALLEY_PATH não está configurada."
           }
 
       - name: Compilar mod selecionado
         shell: pwsh
+        env:
+          STARDEW_VALLEY_PATH: ${{ vars.STARDEW_VALLEY_PATH }}
         run: |
           $project = switch ("${{ inputs.mod }}") {
             "AddMoney" { "AddMoney/AddMoney.csproj" }
@@ -60,7 +66,7 @@ jobs:
           }
 
           dotnet restore $project
-          dotnet build $project --configuration Release --no-restore -p:GamePath="${{ vars.STARDEW_VALLEY_PATH }}" -p:EnableModDeploy=false
+          dotnet build $project --configuration Release --no-restore -p:GamePath="$env:STARDEW_VALLEY_PATH" -p:EnableModDeploy=false
 
       - name: Localizar pacote gerado
         id: package
