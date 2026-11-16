@@ -7,27 +7,30 @@ public static class ConfigUtils
 {
     public static ModConfig NormalizeMachineConfig(this ModConfig cfg, IMonitor? monitor = null)
     {
+        monitor?.Log("[ConfigUtils] Starting config normalization.", LogLevel.Trace);
 
-        monitor?.Log($"[ConfigUtils] Starting normalize config", LogLevel.Trace);
-
+        cfg.Machines ??= [];
         cfg.Machines = Machines.GetMachines(cfg.Machines);
 
         var machinesList = new List<MachineConfig>();
-
-        foreach (var m in cfg.Machines)
+        foreach (var machineConfig in cfg.Machines)
         {
-            var machine = TryResolveId(m, monitor) ?? m;
-
+            var machine = TryResolveId(machineConfig, monitor);
             machine = NormalizeTime(machine);
 
-            if (machinesList.Any(m => m.Id == machine.Id))
+            if (string.IsNullOrWhiteSpace(machine.Id))
+            {
+                monitor?.Log($"Ignoring machine configuration with unresolved legacy name '{machine.Name}'.", LogLevel.Warn);
+                continue;
+            }
+
+            if (machinesList.Any(existing => string.Equals(existing.Id, machine.Id, StringComparison.Ordinal)))
                 continue;
 
             machinesList.Add(machine);
         }
 
         cfg.Machines = [.. machinesList];
-
         return cfg;
     }
 
@@ -37,7 +40,6 @@ public static class ConfigUtils
             machine.Time = 10;
 
         machine.Time = RoundedTime(machine.Time);
-
         return machine;
     }
 
@@ -47,12 +49,9 @@ public static class ConfigUtils
         int rounded = value - (value >= 0 ? remainder : -remainder);
 
         if (remainder >= 5)
-            rounded += (value >= 0) ? 10 : -10;
+            rounded += value >= 0 ? 10 : -10;
 
-        if (rounded < 10)
-            rounded = 10;
-
-        return rounded;
+        return Math.Max(10, rounded);
     }
 
     public static int CalculateTarget(this MachineConfig cfg, int original)
@@ -60,38 +59,39 @@ public static class ConfigUtils
         if (cfg is null)
             return original;
 
-        var roundedTime = RoundedTime(cfg.Time);
-
-        return Math.Min(original, roundedTime);
+        // The configured time is an upper bound: never make a machine take
+        // longer than its original cycle.
+        return Math.Min(original, RoundedTime(cfg.Time));
     }
 
-    private static MachineConfig TryResolveId(MachineConfig m, IMonitor? monitor = null)
+    private static MachineConfig TryResolveId(MachineConfig machine, IMonitor? monitor = null)
     {
-        if (string.IsNullOrWhiteSpace(m.Id) && !string.IsNullOrWhiteSpace(m.Name))
+        if (!string.IsNullOrWhiteSpace(machine.Id))
+            return machine;
+
+        var legacyName = machine.Name;
+        if (string.IsNullOrWhiteSpace(legacyName))
+            return machine;
+
+        if (Machines.TryResolveLegacyNameToId(legacyName, out var machineId)
+            && !string.IsNullOrWhiteSpace(machineId))
         {
-            if (Machines.TryResolveLegacyNameToId(m.Name, out var machineId))
-            {
-                m.Id = machineId ?? string.Empty;
-                m.Name = null;
-
-                monitor?.Log($"[ConfigUtils.Normalize] Migrated machine config '{m.Name}' to id '{m.Id}'.", LogLevel.Trace);
-            }
-            else
-            {
-                if (m.Name.StartsWithIgnoreCase("(BC)"))
-                {
-                    m.Id = m.Name;
-                    m.Name = null;
-                }
-                else
-                    monitor?.Log($"[ConfigUtils] Could not resolve legacy machine name '{m.Name}'. Keeping empty id.", LogLevel.Trace);
-
-                if (m.Id.StartsWithIgnoreCase("(BC)"))
-                    m.Name = null;
-            }
+            machine.Id = machineId;
+            machine.Name = null;
+            monitor?.Log($"Migrated legacy machine name '{legacyName}' to qualified ID '{machine.Id}'.", LogLevel.Trace);
+            return machine;
         }
 
-        return m;
+        if (legacyName.StartsWithIgnoreCase("(BC)"))
+        {
+            machine.Id = legacyName;
+            machine.Name = null;
+            monitor?.Log($"Kept qualified legacy machine ID '{machine.Id}'.", LogLevel.Trace);
+            return machine;
+        }
+
+        monitor?.Log($"Could not resolve legacy machine name '{legacyName}'. The entry will be skipped safely.", LogLevel.Warn);
+        return machine;
     }
 
     public static void ResetMachine(this StardewValley.Object machine)
