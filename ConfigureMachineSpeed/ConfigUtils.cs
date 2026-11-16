@@ -36,34 +36,18 @@ public static class ConfigUtils
 
     private static MachineConfig NormalizeTime(MachineConfig machine)
     {
-        if (machine.Time < 10)
-            machine.Time = 10;
-
-        machine.Time = RoundedTime(machine.Time);
+        machine.Time = MachineTimeRules.NormalizeConfiguredTime(machine.Time);
         return machine;
     }
 
-    public static int RoundedTime(int value)
-    {
-        // Use Int64 to safely handle int.MinValue from a manually edited config.
-        var longValue = (long)value;
-        var remainder = (int)(Math.Abs(longValue) % 10);
-        var rounded = longValue - (longValue >= 0 ? remainder : -remainder);
-
-        if (remainder >= 5)
-            rounded += longValue >= 0 ? 10 : -10;
-
-        return (int)Math.Clamp(rounded, 10L, int.MaxValue);
-    }
+    public static int RoundedTime(int value) => MachineTimeRules.NormalizeConfiguredTime(value);
 
     public static int CalculateTarget(this MachineConfig cfg, int original)
     {
         if (cfg is null)
             return original;
 
-        // The configured time is an upper bound: never make a machine take
-        // longer than its original cycle.
-        return Math.Min(original, RoundedTime(cfg.Time));
+        return MachineTimeRules.CalculateTarget(cfg.Time, original);
     }
 
     private static MachineConfig TryResolveId(MachineConfig machine, IMonitor? monitor = null)
