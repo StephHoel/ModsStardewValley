@@ -52,7 +52,7 @@ This repository contains my mods for [Stardew Valley for PC](http://stardewvalle
 
 **Configure Machine Speed:** adjusts supported machine processing times. Configured times are at least 10 minutes and never exceed the machine's original processing time. Casks and DayUpdate-dependent machines have dedicated behavior.
 
-This codes are based on:
+This code is based on:
 
 * AddMoney by [Pempi](https://www.nexusmods.com/stardewvalley/mods/20111)
 * AutoWater SDV1.6 by [KochiPiccle](https://www.nexusmods.com/stardewvalley/mods/1666)
@@ -66,6 +66,6 @@ This codes are based on:
 
 ## Thanks
 
-Thanks for Pathoschild to help me.
+Thanks to Pathoschild for the help.
 ";
 }
