@@ -23,22 +23,24 @@
 [*]Enjoy!
 [/list]
 
-[size=4]Config File:[/size]
+[size=4]Config File and Processing Rules:[/size]
 [list]
-[*]The "config.json" file contains only the list of machines and their processing times.
-[*]Each machine has three main fields: Id, Name and Time.
-[*]Id and Name are identifiers and should not be changed, as doing so may cause the mod to stop working correctly.
-[*]Time defines the processing time in in-game minutes.
-[*]The minimum time is 10 minutes (always rounded to the nearest multiple of 10).
-[*]The maximum time is limited to the machine's original time.
-[*]Duplicate machines are not allowed in the config.
+[*]The "config.json" file contains the machine IDs and their configured processing times.
+[*]The qualified machine Id is the source of truth. The legacy Name field is read only to migrate older configurations to IDs; unresolved legacy names are skipped safely and reported in the SMAPI log.
+[*]Time defines the processing time in in-game minutes. Values are normalized to a minimum of 10 minutes and rounded to the nearest multiple of 10.
+[*]The configured time is an upper bound: a machine is never made slower than its original processing time.
+[*]Qualified IDs take precedence over legacy internal-name matching. Explicit exclusions take precedence over all configured values.
+[*]Duplicate machine IDs are collapsed during normalization.
+[*]Casks use a dedicated aging path. The mod advances aging in a bounded loop of at most 100 DayUpdate calls and stops when the held item changes or its quality increases.
+[*]Machines whose processing depends on DayUpdate, including bee houses, coffee makers, crab pots, dehydrators, worm bins, mushroom logs and incubators, are intentionally excluded from the accelerated processing path.
+[*]Tapper, Heavy Tapper, Bait Maker, Lightning Rod, Solar Panel and Anvil are also excluded.
 [/list]
 
 [size=4]Mod Behavior:[/size]
 [list]
-[*]Machine times are automatically updated whenever the in-game clock updates (every 10 minutes).
+[*]Machine times are automatically updated whenever the in-game clock updates (every 10 minutes) and at the start of the day.
 [*]Machines that restart their cycle upon item collection (such as Crystalarium) have their time updated immediately after collection.
-[*]Machines whose behavior depends on the start of the day are not affected by the mod (currently under investigation for future support).
+[*]Day-Update-dependent machines still require their normal game update cycle.
 [/list]
 
 [size=4]Tested and Supported Machines:[/size]

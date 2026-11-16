@@ -1,18 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<DebugType>none</DebugType>
+    <DebugType>none</DebugType>
+    <EnableGameDebugging>false</EnableGameDebugging>
+    <EnableModDeploy>false</EnableModDeploy>
+    <EnableModZip>false</EnableModZip>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Stardew Valley">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Stardew Valley.dll</HintPath>
-    </Reference>
-    <Reference Include="StardewModdingAPI">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley\StardewModdingAPI.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.4.0" />
   </ItemGroup>
 </Project>

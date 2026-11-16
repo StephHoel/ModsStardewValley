@@ -1,8 +1,8 @@
-﻿{
+{
   "Name": "AutoWater",
   "Author": "Steph Hoel",
   "Version": "%ProjectVersion%",
-  "description": "Automatically water your plants at the start of each day.",
+  "Description": "Automatically waters supported crops and garden pots each day. Requires Stardew Valley 1.6 and SMAPI 4.2.0 or later.",
   "UniqueID": "StephHoel.AutoWater",
   "EntryDll": "AutoWater.dll",
   "MinimumApiVersion": "4.2.0",
